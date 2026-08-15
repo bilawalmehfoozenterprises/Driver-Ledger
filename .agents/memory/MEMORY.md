@@ -1,0 +1,1 @@
+- [Workspace package installs](workspace-package-installs.md) — target Expo dependencies with a package filter when the generic installer resolves at the monorepo root.

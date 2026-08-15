@@ -1,15 +1,13 @@
-# [Project name]
+# Driver Income Tracker
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A mobile-only Expo foundation for a Pakistani driver who will later track student transport income, occasional bookings, and vehicle expenses such as petrol.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/driver-income-tracker run dev` — run the Expo mobile preview
+- `pnpm --filter @workspace/api-server run dev` — run the shared API server when backend work is introduced
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
 
 ## Stack
 
@@ -22,23 +20,35 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/driver-income-tracker/src/app` — Expo Router layouts and routes only
+- `artifacts/driver-income-tracker/src/components` — shared native components
+- `artifacts/driver-income-tracker/src/features` — feature-oriented modules as they are added
+- `artifacts/driver-income-tracker/src/theme` — current placeholder theme tokens
+- `artifacts/driver-income-tracker/src/hooks` — reusable hooks
+- `artifacts/driver-income-tracker/src/services` — future persistence and integrations
+- `artifacts/driver-income-tracker/src/types` — shared domain types
+- `artifacts/driver-income-tracker/src/utils` — small reusable helpers
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Expo Router uses the recommended `src/app` structure.
+- The initial app is frontend-only; there is no app backend, database, or authentication layer yet.
+- Bottom navigation supports Expo Router NativeTabs on supported iOS versions and a classic tabs fallback elsewhere.
+- `lucide-react-native` is the app icon library for custom UI icons.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+The current foundation exposes empty Home, Reports, and Settings routes. Income, expenses, persistence, and the central Add interaction are intentionally deferred.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Establish the theme and navigation direction before designing the Add interaction.
+- Keep the first foundation free of mock data, business logic, backend work, and authentication.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Add routes only under `src/app`; non-route code belongs under the corresponding `src/` folder.
+- Keep the static `app.json` configuration; do not add a dynamic Expo config file.
 
 ## Pointers
 
