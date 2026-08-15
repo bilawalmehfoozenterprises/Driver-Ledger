@@ -23,7 +23,7 @@ A mobile-only Expo foundation for a Pakistani driver who will later track studen
 - `artifacts/driver-income-tracker/src/app` — Expo Router layouts and routes only
 - `artifacts/driver-income-tracker/src/components` — shared native components
 - `artifacts/driver-income-tracker/src/features` — feature-oriented modules as they are added
-- `artifacts/driver-income-tracker/src/theme` — current placeholder theme tokens
+- `artifacts/driver-income-tracker/src/theme` — centralized light-theme tokens for colors, typography, spacing, radius, icons, and touch targets
 - `artifacts/driver-income-tracker/src/hooks` — reusable hooks
 - `artifacts/driver-income-tracker/src/services` — future persistence and integrations
 - `artifacts/driver-income-tracker/src/types` — shared domain types
@@ -42,7 +42,7 @@ The current foundation exposes empty Home, Reports, and Settings routes. Income,
 
 ## User preferences
 
-- Establish the theme and navigation direction before designing the Add interaction.
+- Keep screens consuming centralized theme tokens rather than hardcoding visual values.
 - Keep the first foundation free of mock data, business logic, backend work, and authentication.
 
 ## Gotchas

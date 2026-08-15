@@ -1,25 +1,15 @@
-const colors = {
-  light: {
-    text: '#0a0a0a',
-    tint: '#2f95dc',
-    background: '#ffffff',
-    foreground: '#0a0a0a',
-    card: '#f9f9f9',
-    cardForeground: '#0a0a0a',
-    primary: '#2f95dc',
-    primaryForeground: '#ffffff',
-    secondary: '#f0f0f0',
-    secondaryForeground: '#1a1a1a',
-    muted: '#f0f0f0',
-    mutedForeground: '#737373',
-    accent: '#f0f0f0',
-    accentForeground: '#1a1a1a',
-    destructive: '#ef4444',
-    destructiveForeground: '#ffffff',
-    border: '#e5e5e5',
-    input: '#e5e5e5',
-  },
-  radius: 8,
-};
+export const colors = {
+  background: '#F7F4EE',
+  surface: '#FFFFFF',
+  primary: '#2F6B4F',
+  primaryForeground: '#FFFFFF',
+  text: '#252823',
+  textSecondary: '#73776F',
+  border: '#E3E0D8',
+  income: '#2F7D57',
+  expense: '#B45C4A',
+  warning: '#C58A32',
+  destructive: '#B54848',
+} as const;
 
 export default colors;

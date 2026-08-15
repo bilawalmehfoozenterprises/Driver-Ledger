@@ -1,12 +1,12 @@
-import { useColorScheme } from 'react-native';
-import colors from '@/theme/colors';
+import { colors } from '@/theme';
 
 export function useColors() {
-  const scheme = useColorScheme();
-  const palette =
-    scheme === 'dark' && 'dark' in colors
-      ? (colors as Record<string, typeof colors.light>).dark
-      : colors.light;
-
-  return { ...palette, radius: colors.radius };
+  // Keep the scaffold's existing hook working while the app is light-theme only.
+  return {
+    ...colors,
+    // Compatibility aliases for the existing foundation components.
+    foreground: colors.text,
+    card: colors.surface,
+    mutedForeground: colors.textSecondary,
+  };
 }
