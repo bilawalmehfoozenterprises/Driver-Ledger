@@ -20,16 +20,14 @@ class MonthlyRecordsList extends StatelessWidget {
       return const Center(child: Text('No monthly records'));
     }
 
-    return ListView.builder(
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: records.length,
-      itemBuilder: (context, index) {
-        final record = records[index];
-        return MonthCard(
-          record: record,
-          onTap: () => onRecordTap(record),
-        );
-      },
+      child: Column(
+        children: [
+          for (final record in records)
+            MonthCard(record: record, onTap: () => onRecordTap(record)),
+        ],
+      ),
     );
   }
 }
