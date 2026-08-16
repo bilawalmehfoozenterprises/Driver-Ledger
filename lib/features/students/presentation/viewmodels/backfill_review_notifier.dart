@@ -136,4 +136,28 @@ class BackfillReviewNotifier extends _$BackfillReviewNotifier {
 
     await repository.insertRecords(records);
   }
+
+  /// Creates each missing month as Unpaid using the documented prefill rule,
+  /// bypassing row-by-row review. Used by entry points that support
+  /// skipping the review screen (e.g. new-student creation).
+  Future<void> skip() async {
+    final current = state.valueOrNull;
+    if (current == null || current.rows.isEmpty) return;
+
+    final repository = ref.read(monthlyRecordRepositoryProvider);
+    final now = DateTime.now();
+    final records = current.rows
+        .map(
+          (row) => MonthlyRecord(
+            studentId: current.studentId,
+            month: row.month,
+            year: row.year,
+            expectedFee: row.expectedFee,
+            createdAt: now,
+          ),
+        )
+        .toList();
+
+    await repository.insertRecords(records);
+  }
 }

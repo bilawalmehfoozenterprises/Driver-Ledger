@@ -12,10 +12,25 @@ import '../widgets/backfill_row_card.dart';
 class BackfillReviewScreen extends ConsumerWidget {
   final int studentId;
 
-  const BackfillReviewScreen({super.key, required this.studentId});
+  /// When true, shows a "Skip" action that creates each missing month as
+  /// Unpaid using the documented prefill rule, bypassing row-by-row review.
+  /// Only the new-student creation entry point sets this; other entry
+  /// points are already opt-in, so reaching the screen is the opt-in step.
+  final bool showSkip;
+
+  const BackfillReviewScreen({
+    super.key,
+    required this.studentId,
+    this.showSkip = false,
+  });
 
   Future<void> _save(BuildContext context, WidgetRef ref) async {
     await ref.read(backfillReviewNotifierProvider(studentId).notifier).save();
+    if (context.mounted) context.pop();
+  }
+
+  Future<void> _skip(BuildContext context, WidgetRef ref) async {
+    await ref.read(backfillReviewNotifierProvider(studentId).notifier).skip();
     if (context.mounted) context.pop();
   }
 
@@ -56,9 +71,24 @@ class BackfillReviewScreen extends ConsumerWidget {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: ElevatedButton(
-            onPressed: () => _save(context, ref),
-            child: const Text('Save'),
+          child: Row(
+            children: [
+              if (showSkip) ...[
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _skip(context, ref),
+                    child: const Text('Skip'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+              ],
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => _save(context, ref),
+                  child: const Text('Save'),
+                ),
+              ),
+            ],
           ),
         ),
       ),

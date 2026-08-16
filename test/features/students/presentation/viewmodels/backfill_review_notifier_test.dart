@@ -230,6 +230,49 @@ void main() {
       final saved = await fakeRecordRepository.getRecordsForStudent(1);
       expect(saved, isEmpty);
     });
+
+    test(
+      'skip creates each missing month as Unpaid using the prefill rule, ignoring row edits',
+      () async {
+        // June 2024 has 30 days; joining on the 16th leaves 15 remaining days.
+        final fakeStudentRepository = FakeStudentRepository(
+          students: [_student(id: 1, joinDate: DateTime(2024, 6, 16))],
+        );
+        final fakeRecordRepository = FakeMonthlyRecordRepository();
+
+        final container = ProviderContainer(
+          overrides: [
+            studentRepositoryProvider.overrideWithValue(fakeStudentRepository),
+            monthlyRecordRepositoryProvider.overrideWithValue(
+              fakeRecordRepository,
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        await container.read(backfillReviewNotifierProvider(1).future);
+        final notifier = container.read(
+          backfillReviewNotifierProvider(1).notifier,
+        );
+
+        // Edits made before skipping must be ignored by skip's fallback.
+        notifier.updateAmountPaid(0, 9999);
+
+        await notifier.skip();
+
+        final saved = await fakeRecordRepository.getRecordsForStudent(1);
+        final joinMonthRecord = saved.firstWhere(
+          (r) => r.month == 6 && r.year == 2024,
+        );
+        expect(joinMonthRecord.expectedFee, (3000 / 30) * 15);
+        expect(joinMonthRecord.totalPaid, 0);
+        expect(joinMonthRecord.status, 'Unpaid');
+
+        for (final record in saved) {
+          expect(record.totalPaid, 0);
+        }
+      },
+    );
   });
 }
 

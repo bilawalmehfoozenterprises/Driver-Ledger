@@ -81,7 +81,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoutes.backfillReview.name,
         builder: (context, state) {
           final studentId = int.parse(state.pathParameters['studentId']!);
-          return BackfillReviewScreen(studentId: studentId);
+          return BackfillReviewScreen(
+            studentId: studentId,
+            showSkip: state.extra == true,
+          );
         },
       ),
     ],

@@ -146,7 +146,7 @@ class AddStudentFormNotifier extends _$AddStudentFormNotifier {
     );
   }
 
-  Future<void> save() async {
+  Future<Student> save() async {
     state = state.copyWith(isSaving: true);
 
     final fee = double.tryParse(state.monthlyFee) ?? 0;
@@ -177,8 +177,10 @@ class AddStudentFormNotifier extends _$AddStudentFormNotifier {
     try {
       if (state.isEditing) {
         await repository.updateStudent(student);
+        return student;
       } else {
-        await repository.insertStudent(student);
+        final id = await repository.insertStudent(student);
+        return student.copyWith(id: id);
       }
     } finally {
       state = state.copyWith(isSaving: false);

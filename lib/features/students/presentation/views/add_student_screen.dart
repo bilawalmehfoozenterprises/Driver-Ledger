@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/app_routes.dart';
+import '../../domain/backfill_calculator.dart';
 import '../viewmodels/add_student_form_notifier.dart';
 import '../widgets/fill_mock_data_button.dart';
 import '../widgets/save_student_button.dart';
@@ -68,13 +70,33 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
-    await ref
+    final isNewStudent = widget.studentId == null;
+
+    final student = await ref
         .read(addStudentFormNotifierProvider(widget.studentId).notifier)
         .save();
 
-    if (mounted) {
-      context.pop();
+    if (!mounted) return;
+
+    if (isNewStudent) {
+      final now = DateTime.now();
+      final hasGap = calculateMissingMonths(
+        joinDate: student.joinDate,
+        now: now,
+        existingRecords: const [],
+      ).isNotEmpty;
+
+      if (hasGap) {
+        context.pushReplacementNamed(
+          AppRoutes.backfillReview.name,
+          pathParameters: {'studentId': student.id.toString()},
+          extra: true,
+        );
+        return;
+      }
     }
+
+    context.pop();
   }
 
   @override
