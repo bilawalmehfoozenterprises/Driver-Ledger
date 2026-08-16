@@ -17,6 +17,17 @@ When storage-specific mechanics are needed, load the ACT storage reference with:
 
 `node ~/.config/agentic-coding-toolkit/bin/act-run-script.js skills/act-config/scripts/show-storage-reference.js --storage <local|github>`
 
+### GitHub storage addendum: link Work Items as native sub-issues
+
+The GitHub storage reference's `Parent: #123` convention only writes plain text into a Work Item's body — it does **not** create a real GitHub sub-issue relationship, so the parent issue shows no progress checklist. After creating (or patching) Work Item issues for a GitHub-backed Spec, also link each Work Item as a native sub-issue of its parent Spec issue:
+
+```
+gh api repos/<owner>/<repo>/issues/<parent_number>/sub_issues \
+  -F sub_issue_id="$(gh api repos/<owner>/<repo>/issues/<work_item_number> -q .id)"
+```
+
+Note: `sub_issue_id` must be the issue's numeric database `id` (from `gh api .../issues/<number> -q .id`), not its issue `number` — pass it via `-F` (typed) not `-f` (string), or the GitHub API rejects the request. Do this for every newly created Work Item issue, in addition to (not instead of) the `Parent: #123` text reference.
+
 Workflow Storage preserves the same concepts: Spec, Interview Ledger, Work Item, Parent Spec Reference, Blocker Reference, Blocking Decision, and Acceptance Criteria.
 
 ## Artifact Vocabulary
