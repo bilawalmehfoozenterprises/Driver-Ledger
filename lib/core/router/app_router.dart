@@ -35,7 +35,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/students/add',
         name: 'add-student',
-        builder: (context, state) => const AddStudentScreen(),
+        builder: (context, state) => const AddStudentScreen(studentId: null),
+      ),
+      GoRoute(
+        path: '/students/:id/edit',
+        name: 'edit-student',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return AddStudentScreen(studentId: id);
+        },
       ),
       GoRoute(
         path: '/students/:id',

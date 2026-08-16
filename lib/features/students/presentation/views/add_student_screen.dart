@@ -9,9 +9,9 @@ import '../../data/repositories/student_repository.dart';
 
 /// Add/Edit Student screen
 class AddStudentScreen extends StatefulWidget {
-  final Student? student;
+  final int? studentId;
 
-  const AddStudentScreen({super.key, this.student});
+  const AddStudentScreen({super.key, required this.studentId});
 
   @override
   State<AddStudentScreen> createState() => _AddStudentScreenState();
@@ -31,14 +31,25 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
   Shift _selectedShift = Shift.both;
   DateTime _joinDate = DateTime.now();
   bool _isSaving = false;
+  bool _isLoading = true;
+  Student? _student;
 
-  bool get _isEditing => widget.student != null;
+  bool get _isEditing => widget.studentId != null;
 
   @override
   void initState() {
     super.initState();
-    if (_isEditing) {
-      final student = widget.student!;
+    _loadStudent();
+  }
+
+  Future<void> _loadStudent() async {
+    if (!_isEditing) {
+      setState(() => _isLoading = false);
+      return;
+    }
+
+    final student = await _studentRepository.getStudent(widget.studentId!);
+    if (student != null) {
       _nameController.text = student.name;
       _parentNameController.text = student.parentName ?? '';
       _parentPhoneController.text = student.parentPhone ?? '';
@@ -48,6 +59,11 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
       _selectedShift = student.shift;
       _joinDate = student.joinDate;
     }
+
+    setState(() {
+      _student = student;
+      _isLoading = false;
+    });
   }
 
   @override
@@ -103,7 +119,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     final fee = double.tryParse(_feeController.text) ?? 0;
 
     final student = Student(
-      id: widget.student?.id,
+      id: _student?.id,
       name: _nameController.text.trim(),
       parentName: _parentNameController.text.trim().isEmpty
           ? null
@@ -120,8 +136,8 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
           ? null
           : _dropoffController.text.trim(),
       joinDate: _joinDate,
-      isActive: widget.student?.isActive ?? true,
-      createdAt: widget.student?.createdAt ?? DateTime.now(),
+      isActive: _student?.isActive ?? true,
+      createdAt: _student?.createdAt ?? DateTime.now(),
     );
 
     if (_isEditing) {
@@ -141,6 +157,15 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(_isEditing ? 'Edit student' : 'Add student'),
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(

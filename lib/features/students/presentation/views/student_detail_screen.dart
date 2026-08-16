@@ -66,7 +66,7 @@ class StudentDetailScreen extends ConsumerWidget {
                 IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: () async {
-                    await context.push('/students/add', extra: student);
+                    await context.push('/students/$studentId/edit');
                     ref.invalidate(studentDetailNotifierProvider(studentId));
                   },
                 ),
