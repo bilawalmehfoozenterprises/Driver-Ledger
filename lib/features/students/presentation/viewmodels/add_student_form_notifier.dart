@@ -174,12 +174,14 @@ class AddStudentFormNotifier extends _$AddStudentFormNotifier {
     );
 
     final repository = ref.read(studentRepositoryProvider);
-    if (state.isEditing) {
-      await repository.updateStudent(student);
-    } else {
-      await repository.insertStudent(student);
+    try {
+      if (state.isEditing) {
+        await repository.updateStudent(student);
+      } else {
+        await repository.insertStudent(student);
+      }
+    } finally {
+      state = state.copyWith(isSaving: false);
     }
-
-    state = state.copyWith(isSaving: false);
   }
 }
