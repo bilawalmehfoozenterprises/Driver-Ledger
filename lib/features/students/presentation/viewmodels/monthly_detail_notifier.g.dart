@@ -7,7 +7,7 @@ part of 'monthly_detail_notifier.dart';
 // **************************************************************************
 
 String _$monthlyDetailNotifierHash() =>
-    r'75b35e2ae7666a2ae526bb113be9424e411c1878';
+    r'd84aa64fd4e3cb13ad98699b6b0414ee65747679';
 
 /// Copied from Dart SDK
 class _SystemHash {
