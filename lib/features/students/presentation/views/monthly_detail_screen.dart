@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../viewmodels/monthly_detail_notifier.dart';
+import '../widgets/edit_expected_fee_dialog.dart';
 import '../widgets/monthly_actions_card.dart';
 import '../widgets/payment_summary_card.dart';
 import '../widgets/record_payment_dialog.dart';
@@ -56,6 +57,24 @@ class MonthlyDetailScreen extends ConsumerWidget {
     }
   }
 
+  Future<void> _editExpectedFee(
+    BuildContext context,
+    WidgetRef ref,
+    double currentExpectedFee,
+  ) async {
+    final fee = await showEditExpectedFeeDialog(
+      context,
+      currentExpectedFee: currentExpectedFee,
+    );
+    if (fee != null) {
+      await ref
+          .read(
+            monthlyDetailNotifierProvider(studentId, monthRecordId).notifier,
+          )
+          .editExpectedFee(fee);
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final recordAsync = ref.watch(
@@ -94,6 +113,8 @@ class MonthlyDetailScreen extends ConsumerWidget {
                     _recordPayment(context, ref, record.amountDue),
                 onRecordVacation: () =>
                     _recordVacation(context, ref, record.vacationDays),
+                onEditExpectedFee: () =>
+                    _editExpectedFee(context, ref, record.expectedFee),
               ),
             ],
           ),

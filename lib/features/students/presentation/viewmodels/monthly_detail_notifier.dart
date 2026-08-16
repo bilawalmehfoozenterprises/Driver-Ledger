@@ -47,4 +47,14 @@ class MonthlyDetailNotifier extends _$MonthlyDetailNotifier {
     ref.invalidateSelf();
     await future;
   }
+
+  Future<void> editExpectedFee(double expectedFee) async {
+    final record = state.valueOrNull;
+    if (record == null) return;
+
+    final repository = ref.read(monthlyRecordRepositoryProvider);
+    await repository.updateRecord(record.copyWith(expectedFee: expectedFee));
+    ref.invalidateSelf();
+    await future;
+  }
 }

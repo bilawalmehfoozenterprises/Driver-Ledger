@@ -7,12 +7,14 @@ class MonthlyActionsCard extends StatelessWidget {
   final MonthlyRecord record;
   final VoidCallback onRecordPayment;
   final VoidCallback onRecordVacation;
+  final VoidCallback onEditExpectedFee;
 
   const MonthlyActionsCard({
     super.key,
     required this.record,
     required this.onRecordPayment,
     required this.onRecordVacation,
+    required this.onEditExpectedFee,
   });
 
   @override
@@ -49,6 +51,15 @@ class MonthlyActionsCard extends StatelessWidget {
                 onPressed: onRecordVacation,
                 icon: const Icon(Icons.beach_access),
                 label: const Text('Record Vacation'),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: onEditExpectedFee,
+                icon: const Icon(Icons.edit),
+                label: const Text('Edit Expected Fee'),
               ),
             ),
           ],
