@@ -1,2 +1,0 @@
-- [Workspace package installs](workspace-package-installs.md) — target Expo dependencies with a package filter when the generic installer resolves at the monorepo root.
-- [Expo web font gating](expo-web-font-gating.md) — allow the web preview to render without blocking on native font loading while preserving the native splash gate.
