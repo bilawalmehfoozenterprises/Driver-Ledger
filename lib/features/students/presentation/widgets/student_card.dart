@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/enums/enums.dart';
+import '../../../../shared/widgets/status_tag.dart';
 import '../../data/models/student.dart';
 
 /// Card showing a single student's summary in the students list.
@@ -32,74 +33,44 @@ class StudentCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Card(
-      child: InkWell(
-        onTap: isInactive ? null : onTap,
-        borderRadius: .circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Opacity(
-            opacity: isInactive ? 0.6 : 1.0,
-            child: Column(
-              crossAxisAlignment: .start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: .start,
-                        children: [
-                          Text(
-                            student.name,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              color: colorScheme.onSurface,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            student.parentPhone ?? 'No phone number',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: .end,
-                      children: [
-                        Text(
-                          'Rs. ${student.monthlyFee.toStringAsFixed(0)}',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: colorScheme.primary,
-                            fontWeight: .bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colorScheme.secondaryContainer,
-                            borderRadius: .circular(8),
-                          ),
-                          child: Text(
-                            _shiftLabel(student.shift),
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: colorScheme.onSecondaryContainer,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
+    return ListTile(
+      onTap: isInactive ? null : onTap,
+      leading: CircleAvatar(
+        backgroundColor: colorScheme.primaryContainer,
+        child: Text(
+          student.name.isEmpty ? '?' : student.name[0].toUpperCase(),
+          style: theme.textTheme.titleMedium?.copyWith(
+            color: colorScheme.onPrimaryContainer,
+            fontWeight: .bold,
           ),
         ),
+      ),
+      title: Text(
+        student.name,
+        style: theme.textTheme.titleMedium?.copyWith(
+          color: colorScheme.onSurface,
+        ),
+      ),
+      subtitle: Text(
+        student.parentPhone ?? 'No phone number',
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: colorScheme.onSurfaceVariant,
+        ),
+      ),
+      trailing: Column(
+        mainAxisSize: .min,
+        crossAxisAlignment: .end,
+        children: [
+          Text(
+            'Rs. ${student.monthlyFee.toStringAsFixed(0)}',
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: colorScheme.primary,
+              fontWeight: .bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          StatusTag(label: _shiftLabel(student.shift)),
+        ],
       ),
     );
   }

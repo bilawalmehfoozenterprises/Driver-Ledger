@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 
 /// Empty state shown when there are no students yet.
 class StudentsEmptyState extends StatelessWidget {
-  const StudentsEmptyState({super.key});
+  final String title;
+  final String message;
+
+  const StudentsEmptyState({
+    super.key,
+    this.title = 'No Students Yet',
+    this.message = 'Add your first student to start tracking payments.',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,14 +25,14 @@ class StudentsEmptyState extends StatelessWidget {
             Icon(Icons.people_outlined, size: 80, color: colorScheme.primary),
             const SizedBox(height: 24),
             Text(
-              'No Students Yet',
+              title,
               style: theme.textTheme.headlineMedium?.copyWith(
                 color: colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Add your first student to start tracking payments.',
+              message,
               textAlign: .center,
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: colorScheme.onSurfaceVariant,
