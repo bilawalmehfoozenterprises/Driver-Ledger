@@ -13,6 +13,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final _studentRepository = StudentRepository();
+  final _monthlyRecordRepository = MonthlyRecordRepository();
+
   int _activeStudents = 0;
   double _totalExpected = 0;
   double _totalCollected = 0;
@@ -29,9 +32,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadDashboard() async {
     setState(() => _isLoading = true);
 
-    final students = await StudentRepository.getActiveStudents();
+    final students = await _studentRepository.getActiveStudents();
     final now = DateTime.now();
-    final summary = await MonthlyRecordRepository.getMonthlySummary(
+    final summary = await _monthlyRecordRepository.getMonthlySummary(
       now.month,
       now.year,
     );
@@ -39,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Get unpaid/partial students
     final unpaidStudents = <Map<String, dynamic>>[];
     for (final student in students) {
-      final record = await MonthlyRecordRepository.getOrCreateRecord(
+      final record = await _monthlyRecordRepository.getOrCreateRecord(
         student.id!,
         now.month,
         now.year,

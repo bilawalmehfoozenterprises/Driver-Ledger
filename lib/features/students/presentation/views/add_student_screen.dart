@@ -18,6 +18,8 @@ class AddStudentScreen extends StatefulWidget {
 }
 
 class _AddStudentScreenState extends State<AddStudentScreen> {
+  final _studentRepository = StudentRepository();
+
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _parentNameController = TextEditingController();
@@ -123,9 +125,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     );
 
     if (_isEditing) {
-      await StudentRepository.updateStudent(student);
+      await _studentRepository.updateStudent(student);
     } else {
-      await StudentRepository.insertStudent(student);
+      await _studentRepository.insertStudent(student);
     }
 
     setState(() => _isSaving = false);

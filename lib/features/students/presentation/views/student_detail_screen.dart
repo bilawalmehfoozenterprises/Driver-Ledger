@@ -19,6 +19,9 @@ class StudentDetailScreen extends StatefulWidget {
 }
 
 class _StudentDetailScreenState extends State<StudentDetailScreen> {
+  final _studentRepository = StudentRepository();
+  final _monthlyRecordRepository = MonthlyRecordRepository();
+
   Student? _student;
   List<MonthlyRecord> _records = [];
   bool _isLoading = true;
@@ -31,11 +34,11 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
-    final student = await StudentRepository.getStudent(widget.studentId);
+    final student = await _studentRepository.getStudent(widget.studentId);
 
     // Ensure current month record exists
     final now = DateTime.now();
-    await MonthlyRecordRepository.getOrCreateRecord(
+    await _monthlyRecordRepository.getOrCreateRecord(
       widget.studentId,
       now.month,
       now.year,
@@ -43,7 +46,7 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
     );
 
     // Reload records after potential creation
-    final records = await MonthlyRecordRepository.getRecordsForStudent(
+    final records = await _monthlyRecordRepository.getRecordsForStudent(
       widget.studentId,
     );
 
@@ -105,7 +108,7 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
     );
 
     if (confirmed == true) {
-      await StudentRepository.deactivateStudent(widget.studentId);
+      await _studentRepository.deactivateStudent(widget.studentId);
       if (mounted) {
         context.pop();
       }

@@ -14,6 +14,8 @@ class StudentsScreen extends StatefulWidget {
 }
 
 class _StudentsScreenState extends State<StudentsScreen> {
+  final _studentRepository = StudentRepository();
+
   List<Student> _activeStudents = [];
   List<Student> _inactiveStudents = [];
   bool _isLoading = true;
@@ -26,7 +28,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
 
   Future<void> _loadStudents() async {
     setState(() => _isLoading = true);
-    final allStudents = await StudentRepository.getAllStudents();
+    final allStudents = await _studentRepository.getAllStudents();
     setState(() {
       _activeStudents = allStudents.where((s) => s.isActive).toList();
       _inactiveStudents = allStudents.where((s) => !s.isActive).toList();

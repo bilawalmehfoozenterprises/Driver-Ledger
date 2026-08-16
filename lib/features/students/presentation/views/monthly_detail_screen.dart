@@ -20,6 +20,8 @@ class MonthlyDetailScreen extends StatefulWidget {
 }
 
 class _MonthlyDetailScreenState extends State<MonthlyDetailScreen> {
+  final _monthlyRecordRepository = MonthlyRecordRepository();
+
   MonthlyRecord? _record;
   bool _isLoading = true;
 
@@ -31,7 +33,7 @@ class _MonthlyDetailScreenState extends State<MonthlyDetailScreen> {
 
   Future<void> _loadRecord() async {
     setState(() => _isLoading = true);
-    final records = await MonthlyRecordRepository.getRecordsForStudent(
+    final records = await _monthlyRecordRepository.getRecordsForStudent(
       widget.studentId,
     );
     final record = records.firstWhere(
@@ -91,7 +93,7 @@ class _MonthlyDetailScreenState extends State<MonthlyDetailScreen> {
     if (confirmed == true && amountController.text.isNotEmpty) {
       final amount = double.tryParse(amountController.text) ?? 0;
       if (amount > 0) {
-        await MonthlyRecordRepository.recordPayment(
+        await _monthlyRecordRepository.recordPayment(
           widget.monthRecordId,
           amount,
         );
@@ -144,7 +146,7 @@ class _MonthlyDetailScreenState extends State<MonthlyDetailScreen> {
       if (days >= 0) {
         final dailyRate = _record!.expectedFee / 26;
         final deduction = dailyRate * days;
-        await MonthlyRecordRepository.recordVacation(
+        await _monthlyRecordRepository.recordVacation(
           widget.monthRecordId,
           days,
           deduction,
