@@ -1,7 +1,7 @@
 import React from 'react';
 import { Platform, StyleSheet, useColorScheme, View } from 'react-native';
 import { useColors } from '@/hooks/useColors';
-import { BarChart3, Home, Settings } from 'lucide-react-native';
+import { BarChart3, Home, Settings, Users } from 'lucide-react-native';
 import { BlurView } from 'expo-blur';
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import { Tabs } from 'expo-router';
@@ -14,6 +14,10 @@ function NativeTabLayout() {
       <NativeTabs.Trigger name="index">
         <Icon sf={{ default: 'house', selected: 'house.fill' }} />
         <Label>Home</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="students">
+        <Icon sf={{ default: 'person.3', selected: 'person.3.fill' }} />
+        <Label>Students</Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="reports">
         <Icon sf={{ default: 'chart.bar', selected: 'chart.bar.fill' }} />
@@ -75,6 +79,13 @@ function ClassicTabLayout() {
             ) : (
               <Home size={22} color={color} />
             ),
+        }}
+      />
+      <Tabs.Screen
+        name="students"
+        options={{
+          title: 'Students',
+          tabBarIcon: ({ color }) => <Users size={22} color={color} />,
         }}
       />
       <Tabs.Screen
