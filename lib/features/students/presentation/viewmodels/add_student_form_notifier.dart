@@ -17,6 +17,11 @@ class AddStudentFormState {
   final String pickupLocation;
   final String dropoffLocation;
   final DateTime joinDate;
+
+  /// The joinDate as originally loaded from the existing Student, before
+  /// any edits. Null in create mode. Used to detect join-date edits at
+  /// save time without re-fetching the Student.
+  final DateTime? originalJoinDate;
   final bool isActive;
   final DateTime? createdAt;
   final bool isLoading;
@@ -32,6 +37,7 @@ class AddStudentFormState {
     this.pickupLocation = '',
     this.dropoffLocation = '',
     required this.joinDate,
+    this.originalJoinDate,
     this.isActive = true,
     this.createdAt,
     this.isLoading = false,
@@ -65,6 +71,7 @@ class AddStudentFormState {
       pickupLocation: pickupLocation ?? this.pickupLocation,
       dropoffLocation: dropoffLocation ?? this.dropoffLocation,
       joinDate: joinDate ?? this.joinDate,
+      originalJoinDate: originalJoinDate,
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
       isLoading: isLoading ?? this.isLoading,
@@ -102,6 +109,7 @@ class AddStudentFormNotifier extends _$AddStudentFormNotifier {
       pickupLocation: student.pickupLocation ?? '',
       dropoffLocation: student.dropoffLocation ?? '',
       joinDate: student.joinDate,
+      originalJoinDate: student.joinDate,
       isActive: student.isActive,
       createdAt: student.createdAt,
       isLoading: false,
@@ -146,7 +154,7 @@ class AddStudentFormNotifier extends _$AddStudentFormNotifier {
     );
   }
 
-  Future<void> save() async {
+  Future<Student> save() async {
     state = state.copyWith(isSaving: true);
 
     final fee = double.tryParse(state.monthlyFee) ?? 0;
@@ -177,8 +185,10 @@ class AddStudentFormNotifier extends _$AddStudentFormNotifier {
     try {
       if (state.isEditing) {
         await repository.updateStudent(student);
+        return student;
       } else {
-        await repository.insertStudent(student);
+        final id = await repository.insertStudent(student);
+        return student.copyWith(id: id);
       }
     } finally {
       state = state.copyWith(isSaving: false);

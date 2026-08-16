@@ -55,6 +55,16 @@ class MonthlyRecordRepository {
     return await db.insert('monthly_records', record.toMap());
   }
 
+  Future<List<int>> insertRecords(List<MonthlyRecord> records) async {
+    final db = await DatabaseHelper.database;
+    final batch = db.batch();
+    for (final record in records) {
+      batch.insert('monthly_records', record.toMap());
+    }
+    final results = await batch.commit();
+    return results.cast<int>();
+  }
+
   Future<void> updateRecord(MonthlyRecord record) async {
     final db = await DatabaseHelper.database;
     await db.update(
@@ -63,6 +73,11 @@ class MonthlyRecordRepository {
       where: 'id = ?',
       whereArgs: [record.id],
     );
+  }
+
+  Future<void> deleteRecord(int id) async {
+    final db = await DatabaseHelper.database;
+    await db.delete('monthly_records', where: 'id = ?', whereArgs: [id]);
   }
 
   Future<void> recordPayment(int recordId, double amount) async {

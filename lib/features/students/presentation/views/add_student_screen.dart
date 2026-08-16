@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/app_routes.dart';
+import '../../data/repositories/monthly_record_repository.dart';
+import '../../domain/backfill_calculator.dart';
 import '../viewmodels/add_student_form_notifier.dart';
 import '../widgets/fill_mock_data_button.dart';
+import '../widgets/join_date_moved_later_dialog.dart';
 import '../widgets/save_student_button.dart';
 import '../widgets/student_info_fields.dart';
 import '../widgets/transport_details_fields.dart';
@@ -68,13 +72,91 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
-    await ref
+    final isNewStudent = widget.studentId == null;
+    final formState = ref.read(addStudentFormNotifierProvider(widget.studentId));
+    final originalJoinDate = formState.originalJoinDate;
+    final editedJoinDate = formState.joinDate;
+
+    if (!isNewStudent &&
+        originalJoinDate != null &&
+        editedJoinDate.isAfter(originalJoinDate)) {
+      final recordRepository = ref.read(monthlyRecordRepositoryProvider);
+      final existingRecords = await recordRepository.getRecordsForStudent(
+        widget.studentId!,
+      );
+      final impact = recordsAffectedByLaterJoinDate(
+        newJoinDate: editedJoinDate,
+        existingRecords: existingRecords,
+      );
+
+      if (impact.toDelete.isNotEmpty) {
+        if (!mounted) return;
+        final confirmed = await showJoinDateMovedLaterDialog(
+          context,
+          monthsToDelete: impact.toDelete.length,
+        );
+        if (confirmed != true) return;
+
+        for (final record in impact.toDelete) {
+          await recordRepository.deleteRecord(record.id!);
+        }
+      }
+
+      final toReprorate = impact.toReprorate;
+      if (toReprorate != null) {
+        final reproratedFee = calculateProratedFee(
+          monthlyFee: double.tryParse(formState.monthlyFee) ?? toReprorate.expectedFee,
+          month: toReprorate.month,
+          year: toReprorate.year,
+          joinDate: editedJoinDate,
+        );
+        await recordRepository.updateRecord(
+          toReprorate.copyWith(expectedFee: reproratedFee),
+        );
+      }
+    }
+
+    if (!mounted) return;
+
+    final student = await ref
         .read(addStudentFormNotifierProvider(widget.studentId).notifier)
         .save();
 
-    if (mounted) {
-      context.pop();
+    if (!mounted) return;
+
+    if (isNewStudent) {
+      final now = DateTime.now();
+      final hasGap = calculateMissingMonths(
+        joinDate: student.joinDate,
+        now: now,
+        existingRecords: const [],
+      ).isNotEmpty;
+
+      if (hasGap) {
+        context.pushReplacementNamed(
+          AppRoutes.backfillReview.name,
+          pathParameters: {'studentId': student.id.toString()},
+          extra: true,
+        );
+        return;
+      }
+    } else if (originalJoinDate != null &&
+        editedJoinDate.isBefore(originalJoinDate)) {
+      final records = await ref
+          .read(monthlyRecordRepositoryProvider)
+          .getRecordsForStudent(student.id!);
+
+      if (records.isNotEmpty) {
+        if (!mounted) return;
+        context.pushReplacementNamed(
+          AppRoutes.backfillReview.name,
+          pathParameters: {'studentId': student.id.toString()},
+        );
+        return;
+      }
     }
+
+    if (mounted) context.pop();
   }
 
   @override

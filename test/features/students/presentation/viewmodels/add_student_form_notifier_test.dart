@@ -126,11 +126,12 @@ void main() {
         ..updateName('New Student')
         ..updateMonthlyFee('4500');
 
-      await notifier.save();
+      final saved = await notifier.save();
 
       expect(fakeRepository.students, hasLength(1));
       expect(fakeRepository.students.first.name, 'New Student');
       expect(fakeRepository.students.first.monthlyFee, 4500);
+      expect(saved.id, fakeRepository.students.first.id);
       final state = container.read(addStudentFormNotifierProvider(null));
       expect(state.isSaving, isFalse);
     });

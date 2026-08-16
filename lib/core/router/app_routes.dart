@@ -10,7 +10,8 @@ enum AppRoutes {
   monthlyDetail(
     'monthly-detail',
     '/students/:studentId/months/:monthId',
-  );
+  ),
+  backfillReview('backfill-review', '/students/:studentId/backfill');
 
   final String name;
   final String path;

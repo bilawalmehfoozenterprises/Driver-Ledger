@@ -103,5 +103,26 @@ void main() {
       expect(calculateVacationDeduction(0, 5), 0);
       expect(calculateVacationDeduction(2600, 0), 0);
     });
+
+    test('editExpectedFee updates expectedFee and refreshes state', () async {
+      final fakeRepository = FakeMonthlyRecordRepository(
+        records: [_record(id: 10, expectedFee: 5000)],
+      );
+
+      final container = ProviderContainer(
+        overrides: [
+          monthlyRecordRepositoryProvider.overrideWithValue(fakeRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(monthlyDetailNotifierProvider(1, 10).future);
+      await container
+          .read(monthlyDetailNotifierProvider(1, 10).notifier)
+          .editExpectedFee(6500);
+
+      final record = container.read(monthlyDetailNotifierProvider(1, 10)).value;
+      expect(record?.expectedFee, 6500);
+    });
   });
 }

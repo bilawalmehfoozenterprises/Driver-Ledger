@@ -61,11 +61,25 @@ class FakeMonthlyRecordRepository implements MonthlyRecordRepository {
   }
 
   @override
+  Future<List<int>> insertRecords(List<MonthlyRecord> records) async {
+    final ids = <int>[];
+    for (final record in records) {
+      ids.add(await insertRecord(record));
+    }
+    return ids;
+  }
+
+  @override
   Future<void> updateRecord(MonthlyRecord record) async {
     final index = records.indexWhere((r) => r.id == record.id);
     if (index != -1) {
       records[index] = record;
     }
+  }
+
+  @override
+  Future<void> deleteRecord(int id) async {
+    records.removeWhere((r) => r.id == id);
   }
 
   @override

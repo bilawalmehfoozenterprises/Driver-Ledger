@@ -7,6 +7,7 @@ import '../../features/students/presentation/views/add_student_screen.dart';
 import '../../features/students/presentation/views/student_detail_screen.dart';
 import '../../features/students/presentation/views/payment_history_screen.dart';
 import '../../features/students/presentation/views/monthly_detail_screen.dart';
+import '../../features/students/presentation/views/backfill_review_screen.dart';
 import '../../shared/widgets/app_scaffold.dart';
 import 'app_routes.dart';
 
@@ -72,6 +73,17 @@ final routerProvider = Provider<GoRouter>((ref) {
           return MonthlyDetailScreen(
             studentId: studentId,
             monthRecordId: monthId,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.backfillReview.path,
+        name: AppRoutes.backfillReview.name,
+        builder: (context, state) {
+          final studentId = int.parse(state.pathParameters['studentId']!);
+          return BackfillReviewScreen(
+            studentId: studentId,
+            showSkip: state.extra == true,
           );
         },
       ),
