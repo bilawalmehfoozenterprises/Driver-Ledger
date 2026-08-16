@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/router/app_routes.dart';
+
 /// Main scaffold with bottom navigation bar
 /// Uses Material 3 NavigationBar for comfortable touch targets
 class AppScaffold extends StatelessWidget {
@@ -33,17 +35,17 @@ class AppScaffold extends StatelessWidget {
 
   int _calculateSelectedIndex(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
-    if (location.startsWith('/students')) return 1;
+    if (location.startsWith(AppRoutes.students.path)) return 1;
     return 0;
   }
 
   void _onItemTapped(int index, BuildContext context) {
     switch (index) {
       case 0:
-        context.go('/');
+        context.goNamed(AppRoutes.home.name);
         break;
       case 1:
-        context.go('/students');
+        context.goNamed(AppRoutes.students.name);
         break;
     }
   }

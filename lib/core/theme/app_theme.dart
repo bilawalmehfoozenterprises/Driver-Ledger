@@ -24,6 +24,9 @@ class AppTheme {
       inputDecorationTheme: const InputDecorationTheme(
         border: OutlineInputBorder(borderRadius: AppRadii.fieldRadius),
       ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        elevation: 2,
+      ),
     );
   }
 }

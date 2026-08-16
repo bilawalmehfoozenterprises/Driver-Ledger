@@ -7,11 +7,12 @@ import '../../features/students/presentation/views/add_student_screen.dart';
 import '../../features/students/presentation/views/student_detail_screen.dart';
 import '../../features/students/presentation/views/monthly_detail_screen.dart';
 import '../../shared/widgets/app_scaffold.dart';
+import 'app_routes.dart';
 
 /// Main router provider
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: AppRoutes.home.path,
     routes: [
       ShellRoute(
         builder: (context, state, child) {
@@ -19,43 +20,43 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
         routes: [
           GoRoute(
-            path: '/',
-            name: 'home',
+            path: AppRoutes.home.path,
+            name: AppRoutes.home.name,
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: HomeScreen()),
           ),
           GoRoute(
-            path: '/students',
-            name: 'students',
+            path: AppRoutes.students.path,
+            name: AppRoutes.students.name,
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: StudentsScreen()),
           ),
         ],
       ),
       GoRoute(
-        path: '/students/add',
-        name: 'add-student',
+        path: AppRoutes.addStudent.path,
+        name: AppRoutes.addStudent.name,
         builder: (context, state) => const AddStudentScreen(studentId: null),
       ),
       GoRoute(
-        path: '/students/:id/edit',
-        name: 'edit-student',
+        path: AppRoutes.editStudent.path,
+        name: AppRoutes.editStudent.name,
         builder: (context, state) {
           final id = int.parse(state.pathParameters['id']!);
           return AddStudentScreen(studentId: id);
         },
       ),
       GoRoute(
-        path: '/students/:id',
-        name: 'student-detail',
+        path: AppRoutes.studentDetail.path,
+        name: AppRoutes.studentDetail.name,
         builder: (context, state) {
           final id = int.parse(state.pathParameters['id']!);
           return StudentDetailScreen(studentId: id);
         },
       ),
       GoRoute(
-        path: '/students/:studentId/months/:monthId',
-        name: 'monthly-detail',
+        path: AppRoutes.monthlyDetail.path,
+        name: AppRoutes.monthlyDetail.name,
         builder: (context, state) {
           final studentId = int.parse(state.pathParameters['studentId']!);
           final monthId = int.parse(state.pathParameters['monthId']!);

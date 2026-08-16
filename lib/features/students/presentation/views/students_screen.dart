@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/app_routes.dart';
 import '../../data/models/student.dart';
 import '../viewmodels/students_list_notifier.dart';
 import '../widgets/student_list_section.dart';
@@ -12,7 +13,10 @@ class StudentsScreen extends ConsumerWidget {
   const StudentsScreen({super.key});
 
   Future<void> _openStudent(BuildContext context, WidgetRef ref, int id) async {
-    await context.push('/students/$id');
+    await context.pushNamed(
+      AppRoutes.studentDetail.name,
+      pathParameters: {'id': id.toString()},
+    );
     ref.invalidate(studentsListNotifierProvider);
   }
 
@@ -56,7 +60,7 @@ class StudentsScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
-          await context.push('/students/add');
+          await context.pushNamed(AppRoutes.addStudent.name);
           ref.invalidate(studentsListNotifierProvider);
         },
         icon: const Icon(Icons.person_add),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/app_routes.dart';
 import '../../data/models/monthly_record.dart';
 import '../../data/models/student.dart';
 import '../../data/repositories/student_repository.dart';
@@ -66,7 +67,10 @@ class StudentDetailScreen extends ConsumerWidget {
                 IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: () async {
-                    await context.push('/students/$studentId/edit');
+                    await context.pushNamed(
+                      AppRoutes.editStudent.name,
+                      pathParameters: {'id': studentId.toString()},
+                    );
                     ref.invalidate(studentDetailNotifierProvider(studentId));
                   },
                 ),
@@ -84,8 +88,12 @@ class StudentDetailScreen extends ConsumerWidget {
                 child: MonthlyRecordsList(
                   records: state.records,
                   onRecordTap: (MonthlyRecord record) async {
-                    await context.push(
-                      '/students/$studentId/months/${record.id}',
+                    await context.pushNamed(
+                      AppRoutes.monthlyDetail.name,
+                      pathParameters: {
+                        'studentId': studentId.toString(),
+                        'monthId': record.id.toString(),
+                      },
                     );
                     ref.invalidate(studentDetailNotifierProvider(studentId));
                   },

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/app_routes.dart';
 import '../../../students/data/repositories/student_repository.dart';
 import '../../../students/data/repositories/monthly_record_repository.dart';
 
@@ -239,7 +240,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return Card(
       child: InkWell(
         onTap: () async {
-          await context.push('/students/${student.id}');
+          await context.pushNamed(
+            AppRoutes.studentDetail.name,
+            pathParameters: {'id': student.id.toString()},
+          );
           _loadDashboard();
         },
         borderRadius: .circular(16),
