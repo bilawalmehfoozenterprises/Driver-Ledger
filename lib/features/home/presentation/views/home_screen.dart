@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/app_routes.dart';
 import '../../../students/data/repositories/student_repository.dart';
 import '../../../students/data/repositories/monthly_record_repository.dart';
 
@@ -13,6 +14,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final _studentRepository = StudentRepository();
+  final _monthlyRecordRepository = MonthlyRecordRepository();
+
   int _activeStudents = 0;
   double _totalExpected = 0;
   double _totalCollected = 0;
@@ -29,9 +33,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadDashboard() async {
     setState(() => _isLoading = true);
 
-    final students = await StudentRepository.getActiveStudents();
+    final students = await _studentRepository.getActiveStudents();
     final now = DateTime.now();
-    final summary = await MonthlyRecordRepository.getMonthlySummary(
+    final summary = await _monthlyRecordRepository.getMonthlySummary(
       now.month,
       now.year,
     );
@@ -39,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Get unpaid/partial students
     final unpaidStudents = <Map<String, dynamic>>[];
     for (final student in students) {
-      final record = await MonthlyRecordRepository.getOrCreateRecord(
+      final record = await _monthlyRecordRepository.getOrCreateRecord(
         student.id!,
         now.month,
         now.year,
@@ -153,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Icon(icon, color: color, size: 24),
             const SizedBox(height: 8),
@@ -161,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
               value,
               style: theme.textTheme.titleLarge?.copyWith(
                 color: colorScheme.onSurface,
-                fontWeight: FontWeight.bold,
+                fontWeight: .bold,
               ),
             ),
             const SizedBox(height: 4),
@@ -205,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(
           'Unpaid / Partial',
@@ -236,17 +240,20 @@ class _HomeScreenState extends State<HomeScreen> {
     return Card(
       child: InkWell(
         onTap: () async {
-          await context.push('/students/${student.id}');
+          await context.pushNamed(
+            AppRoutes.studentDetail.name,
+            pathParameters: {'id': student.id.toString()},
+          );
           _loadDashboard();
         },
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: .circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Text(student.name, style: theme.textTheme.titleMedium),
                     const SizedBox(height: 4),
@@ -263,13 +270,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: statusColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: .circular(8),
                 ),
                 child: Text(
                   record.status,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: statusColor,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: .bold,
                   ),
                 ),
               ),

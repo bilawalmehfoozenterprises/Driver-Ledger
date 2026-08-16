@@ -18,7 +18,7 @@ class DriverLedgerApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,
+      themeMode: .system,
       routerConfig: router,
     );
   }

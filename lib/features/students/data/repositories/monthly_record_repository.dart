@@ -1,12 +1,13 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../../../core/database/database_helper.dart';
 import '../models/monthly_record.dart';
 
+part 'monthly_record_repository.g.dart';
+
 class MonthlyRecordRepository {
-  static Future<MonthlyRecord?> getRecord(
-    int studentId,
-    int month,
-    int year,
-  ) async {
+  Future<MonthlyRecord?> getRecord(int studentId, int month, int year) async {
     final db = await DatabaseHelper.database;
     final maps = await db.query(
       'monthly_records',
@@ -17,7 +18,7 @@ class MonthlyRecordRepository {
     return MonthlyRecord.fromMap(maps.first);
   }
 
-  static Future<MonthlyRecord> getOrCreateRecord(
+  Future<MonthlyRecord> getOrCreateRecord(
     int studentId,
     int month,
     int year,
@@ -38,7 +39,7 @@ class MonthlyRecordRepository {
     return record.copyWith(id: id);
   }
 
-  static Future<List<MonthlyRecord>> getRecordsForStudent(int studentId) async {
+  Future<List<MonthlyRecord>> getRecordsForStudent(int studentId) async {
     final db = await DatabaseHelper.database;
     final maps = await db.query(
       'monthly_records',
@@ -49,12 +50,12 @@ class MonthlyRecordRepository {
     return maps.map((map) => MonthlyRecord.fromMap(map)).toList();
   }
 
-  static Future<int> insertRecord(MonthlyRecord record) async {
+  Future<int> insertRecord(MonthlyRecord record) async {
     final db = await DatabaseHelper.database;
     return await db.insert('monthly_records', record.toMap());
   }
 
-  static Future<void> updateRecord(MonthlyRecord record) async {
+  Future<void> updateRecord(MonthlyRecord record) async {
     final db = await DatabaseHelper.database;
     await db.update(
       'monthly_records',
@@ -64,34 +65,22 @@ class MonthlyRecordRepository {
     );
   }
 
-  static Future<void> recordPayment(int recordId, double amount) async {
-    final db = await DatabaseHelper.database;
-    final maps = await db.query(
-      'monthly_records',
-      where: 'id = ?',
-      whereArgs: [recordId],
-    );
-    if (maps.isEmpty) return;
+  Future<void> recordPayment(int recordId, double amount) async {
+    final record = await _getRecordById(recordId);
+    if (record == null) return;
 
-    final record = MonthlyRecord.fromMap(maps.first);
     final updated = record.copyWith(totalPaid: record.totalPaid + amount);
     await updateRecord(updated);
   }
 
-  static Future<void> recordVacation(
+  Future<void> recordVacation(
     int recordId,
     int vacationDays,
     double deductionAmount,
   ) async {
-    final db = await DatabaseHelper.database;
-    final maps = await db.query(
-      'monthly_records',
-      where: 'id = ?',
-      whereArgs: [recordId],
-    );
-    if (maps.isEmpty) return;
+    final record = await _getRecordById(recordId);
+    if (record == null) return;
 
-    final record = MonthlyRecord.fromMap(maps.first);
     final updated = record.copyWith(
       vacationDays: vacationDays,
       deductionAmount: deductionAmount,
@@ -99,14 +88,22 @@ class MonthlyRecordRepository {
     await updateRecord(updated);
   }
 
-  static Future<Map<String, double>> getMonthlySummary(
-    int month,
-    int year,
-  ) async {
+  Future<MonthlyRecord?> _getRecordById(int recordId) async {
+    final db = await DatabaseHelper.database;
+    final maps = await db.query(
+      'monthly_records',
+      where: 'id = ?',
+      whereArgs: [recordId],
+    );
+    if (maps.isEmpty) return null;
+    return MonthlyRecord.fromMap(maps.first);
+  }
+
+  Future<Map<String, double>> getMonthlySummary(int month, int year) async {
     final db = await DatabaseHelper.database;
     final result = await db.rawQuery(
       '''
-      SELECT 
+      SELECT
         SUM(mr.expected_fee) as total_expected,
         SUM(mr.deduction_amount) as total_deductions,
         SUM(mr.total_paid) as total_collected
@@ -128,3 +125,7 @@ class MonthlyRecordRepository {
     };
   }
 }
+
+@riverpod
+MonthlyRecordRepository monthlyRecordRepository(Ref ref) =>
+    MonthlyRecordRepository();
