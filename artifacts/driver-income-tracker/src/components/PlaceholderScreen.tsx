@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColors } from '@/hooks/useColors';
 
 type PlaceholderScreenProps = {
@@ -9,9 +10,12 @@ export function PlaceholderScreen({ title }: PlaceholderScreenProps) {
   const colors = useColors();
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top', 'left', 'right']}
+    >
       <Text style={[styles.title, { color: colors.foreground }]}>{title}</Text>
-    </View>
+    </SafeAreaView>
   );
 }
 
