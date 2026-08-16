@@ -13,7 +13,7 @@ class StudentsEmptyState extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [
             Icon(Icons.people_outlined, size: 80, color: colorScheme.primary),
             const SizedBox(height: 24),
@@ -26,7 +26,7 @@ class StudentsEmptyState extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Add your first student to start tracking payments.',
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),

@@ -26,10 +26,10 @@ class StudentListSection extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Padding(
-          padding: EdgeInsets.fromLTRB(16, isInactive ? 24 : 16, 16, 8),
+          padding: .fromLTRB(16, isInactive ? 24 : 16, 16, 8),
           child: Text(
             title,
             style: theme.textTheme.titleMedium?.copyWith(

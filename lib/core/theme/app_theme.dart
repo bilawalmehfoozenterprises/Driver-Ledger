@@ -9,18 +9,12 @@ class AppTheme {
 
   /// Light theme with Material 3 enabled
   static ThemeData get light => _themeFrom(
-    ColorScheme.fromSeed(
-      seedColor: AppColors.seedColor,
-      brightness: Brightness.light,
-    ),
+    ColorScheme.fromSeed(seedColor: AppColors.seedColor, brightness: .light),
   );
 
   /// Dark theme with Material 3 enabled
   static ThemeData get dark => _themeFrom(
-    ColorScheme.fromSeed(
-      seedColor: AppColors.seedColor,
-      brightness: Brightness.dark,
-    ),
+    ColorScheme.fromSeed(seedColor: AppColors.seedColor, brightness: .dark),
   );
 
   static ThemeData _themeFrom(ColorScheme colorScheme) {

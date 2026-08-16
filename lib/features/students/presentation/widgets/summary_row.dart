@@ -21,7 +21,7 @@ class SummaryRow extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: .spaceBetween,
       children: [
         Text(
           label,
@@ -32,7 +32,7 @@ class SummaryRow extends StatelessWidget {
         Text(
           value,
           style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            fontWeight: isBold ? .bold : .normal,
             color: valueColor ?? colorScheme.onSurface,
           ),
         ),

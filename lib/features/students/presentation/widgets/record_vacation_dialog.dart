@@ -13,7 +13,7 @@ Future<int?> showRecordVacationDialog(
     builder: (context) => AlertDialog(
       title: const Text('Record Vacation'),
       content: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           Text(
             'Current vacation days: $currentVacationDays',
@@ -22,7 +22,7 @@ Future<int?> showRecordVacationDialog(
           const SizedBox(height: 16),
           TextField(
             controller: daysController,
-            keyboardType: TextInputType.number,
+            keyboardType: .number,
             decoration: const InputDecoration(
               labelText: 'Vacation Days',
               hintText: 'e.g., 3',

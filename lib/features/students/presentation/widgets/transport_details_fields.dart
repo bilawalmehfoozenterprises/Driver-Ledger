@@ -27,7 +27,7 @@ class TransportDetailsFields extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text('Shift', style: theme.textTheme.labelLarge),
         const SizedBox(height: 8),
@@ -35,9 +35,9 @@ class TransportDetailsFields extends StatelessWidget {
           width: double.infinity,
           child: SegmentedButton<Shift>(
             segments: const [
-              ButtonSegment(value: Shift.morning, label: Text('Morning')),
-              ButtonSegment(value: Shift.afternoon, label: Text('Afternoon')),
-              ButtonSegment(value: Shift.both, label: Text('Both')),
+              ButtonSegment(value: .morning, label: Text('Morning')),
+              ButtonSegment(value: .afternoon, label: Text('Afternoon')),
+              ButtonSegment(value: .both, label: Text('Both')),
             ],
             selected: {selectedShift},
             onSelectionChanged: (selection) =>
@@ -46,7 +46,7 @@ class TransportDetailsFields extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Card.outlined(
-          margin: EdgeInsets.zero,
+          margin: .zero,
           child: ListTile(
             leading: const Icon(Icons.calendar_today_outlined),
             title: const Text('Join date'),
@@ -58,7 +58,7 @@ class TransportDetailsFields extends StatelessWidget {
         const SizedBox(height: 16),
         TextFormField(
           controller: pickupController,
-          textCapitalization: TextCapitalization.sentences,
+          textCapitalization: .sentences,
           decoration: const InputDecoration(
             labelText: 'Pickup location (optional)',
             prefixIcon: Icon(Icons.location_on_outlined),
@@ -67,7 +67,7 @@ class TransportDetailsFields extends StatelessWidget {
         const SizedBox(height: 16),
         TextFormField(
           controller: dropoffController,
-          textCapitalization: TextCapitalization.sentences,
+          textCapitalization: .sentences,
           decoration: const InputDecoration(
             labelText: 'Drop-off location (optional)',
             prefixIcon: Icon(Icons.school_outlined),

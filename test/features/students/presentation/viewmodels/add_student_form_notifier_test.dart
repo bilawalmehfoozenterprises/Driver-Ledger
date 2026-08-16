@@ -36,7 +36,7 @@ Student _student({required int id}) {
     parentName: 'Ahmed',
     parentPhone: '03001234567',
     monthlyFee: 5000,
-    shift: Shift.morning,
+    shift: .morning,
     pickupLocation: 'Gulshan',
     dropoffLocation: 'DHA',
     joinDate: DateTime(2024, 3, 1),

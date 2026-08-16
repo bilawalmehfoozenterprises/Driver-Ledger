@@ -1,4 +1,3 @@
-import 'package:driver_ledger/core/enums/enums.dart';
 import 'package:driver_ledger/features/students/data/models/student.dart';
 import 'package:driver_ledger/features/students/data/repositories/student_repository.dart';
 import 'package:driver_ledger/features/students/presentation/viewmodels/students_list_notifier.dart';
@@ -16,7 +15,7 @@ Student _student({
     id: id,
     name: name,
     monthlyFee: 5000,
-    shift: Shift.both,
+    shift: .both,
     joinDate: DateTime(2024, 1, 1),
     isActive: isActive,
     createdAt: DateTime(2024, 1, 1),

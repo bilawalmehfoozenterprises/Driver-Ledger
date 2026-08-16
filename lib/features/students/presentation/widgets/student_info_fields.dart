@@ -18,11 +18,11 @@ class StudentInfoFields extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         TextFormField(
           controller: nameController,
-          textCapitalization: TextCapitalization.words,
+          textCapitalization: .words,
           decoration: const InputDecoration(
             labelText: 'Student name',
             prefixIcon: Icon(Icons.person_outline),
@@ -37,7 +37,7 @@ class StudentInfoFields extends StatelessWidget {
         const SizedBox(height: 16),
         TextFormField(
           controller: parentNameController,
-          textCapitalization: TextCapitalization.words,
+          textCapitalization: .words,
           decoration: const InputDecoration(
             labelText: 'Parent name (optional)',
             prefixIcon: Icon(Icons.person_outline),
@@ -50,7 +50,7 @@ class StudentInfoFields extends StatelessWidget {
             labelText: 'Parent phone (optional)',
             prefixIcon: Icon(Icons.phone_outlined),
           ),
-          keyboardType: TextInputType.phone,
+          keyboardType: .phone,
         ),
         const SizedBox(height: 16),
         TextFormField(
@@ -58,12 +58,12 @@ class StudentInfoFields extends StatelessWidget {
           decoration: const InputDecoration(
             labelText: 'Monthly fee',
             prefixIcon: Padding(
-              padding: EdgeInsets.only(left: 16, right: 4),
+              padding: .only(left: 16, right: 4),
               child: Text('Rs.', style: TextStyle(fontSize: 16)),
             ),
             prefixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
           ),
-          keyboardType: TextInputType.number,
+          keyboardType: .number,
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
               return 'Please enter monthly fee';

@@ -18,11 +18,11 @@ class StudentCard extends StatelessWidget {
 
   String _shiftLabel(Shift shift) {
     switch (shift) {
-      case Shift.morning:
+      case .morning:
         return 'Morning';
-      case Shift.afternoon:
+      case .afternoon:
         return 'Afternoon';
-      case Shift.both:
+      case .both:
         return 'Both';
     }
   }
@@ -35,19 +35,19 @@ class StudentCard extends StatelessWidget {
     return Card(
       child: InkWell(
         onTap: isInactive ? null : onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: .circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Opacity(
             opacity: isInactive ? 0.6 : 1.0,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Row(
                   children: [
                     Expanded(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         children: [
                           Text(
                             student.name,
@@ -66,13 +66,13 @@ class StudentCard extends StatelessWidget {
                       ),
                     ),
                     Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: .end,
                       children: [
                         Text(
                           'Rs. ${student.monthlyFee.toStringAsFixed(0)}',
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: colorScheme.primary,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: .bold,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -83,7 +83,7 @@ class StudentCard extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: colorScheme.secondaryContainer,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: .circular(8),
                           ),
                           child: Text(
                             _shiftLabel(student.shift),

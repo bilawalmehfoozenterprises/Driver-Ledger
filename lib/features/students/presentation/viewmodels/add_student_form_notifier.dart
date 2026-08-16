@@ -28,7 +28,7 @@ class AddStudentFormState {
     this.parentName = '',
     this.parentPhone = '',
     this.monthlyFee = '',
-    this.shift = Shift.both,
+    this.shift = .both,
     this.pickupLocation = '',
     this.dropoffLocation = '',
     required this.joinDate,

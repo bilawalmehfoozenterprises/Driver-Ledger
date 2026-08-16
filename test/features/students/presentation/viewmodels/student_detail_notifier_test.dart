@@ -1,4 +1,3 @@
-import 'package:driver_ledger/core/enums/enums.dart';
 import 'package:driver_ledger/features/students/data/models/monthly_record.dart';
 import 'package:driver_ledger/features/students/data/models/student.dart';
 import 'package:driver_ledger/features/students/data/repositories/monthly_record_repository.dart';
@@ -15,7 +14,7 @@ Student _student({required int id, double monthlyFee = 5000}) {
     id: id,
     name: 'Bilal',
     monthlyFee: monthlyFee,
-    shift: Shift.both,
+    shift: .both,
     joinDate: DateTime(2024, 1, 1),
     createdAt: DateTime(2024, 1, 1),
   );

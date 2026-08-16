@@ -37,11 +37,11 @@ class MonthCard extends StatelessWidget {
     return Card(
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: .circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               Row(
                 children: [
@@ -49,9 +49,7 @@ class MonthCard extends StatelessWidget {
                     child: Text(
                       '${_monthName(record.month)} ${record.year}',
                       style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: isCurrentMonth
-                            ? FontWeight.bold
-                            : FontWeight.normal,
+                        fontWeight: isCurrentMonth ? .bold : .normal,
                       ),
                     ),
                   ),
@@ -65,13 +63,13 @@ class MonthCard extends StatelessWidget {
                         record.status,
                         colorScheme,
                       ).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: .circular(8),
                     ),
                     child: Text(
                       record.status,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: _statusColor(record.status, colorScheme),
-                        fontWeight: FontWeight.bold,
+                        fontWeight: .bold,
                       ),
                     ),
                   ),
@@ -79,10 +77,10 @@ class MonthCard extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: .spaceBetween,
                 children: [
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Text(
                         'Expected',
@@ -98,7 +96,7 @@ class MonthCard extends StatelessWidget {
                   ),
                   if (record.vacationDays > 0)
                     Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: .center,
                       children: [
                         Text(
                           'Vacation',
@@ -115,7 +113,7 @@ class MonthCard extends StatelessWidget {
                       ],
                     ),
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: .end,
                     children: [
                       Text(
                         'Paid',

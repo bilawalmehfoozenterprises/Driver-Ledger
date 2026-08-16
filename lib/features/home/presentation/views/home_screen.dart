@@ -156,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Icon(icon, color: color, size: 24),
             const SizedBox(height: 8),
@@ -164,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
               value,
               style: theme.textTheme.titleLarge?.copyWith(
                 color: colorScheme.onSurface,
-                fontWeight: FontWeight.bold,
+                fontWeight: .bold,
               ),
             ),
             const SizedBox(height: 4),
@@ -208,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(
           'Unpaid / Partial',
@@ -242,14 +242,14 @@ class _HomeScreenState extends State<HomeScreen> {
           await context.push('/students/${student.id}');
           _loadDashboard();
         },
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: .circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Text(student.name, style: theme.textTheme.titleMedium),
                     const SizedBox(height: 4),
@@ -266,13 +266,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: statusColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: .circular(8),
                 ),
                 child: Text(
                   record.status,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: statusColor,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: .bold,
                   ),
                 ),
               ),

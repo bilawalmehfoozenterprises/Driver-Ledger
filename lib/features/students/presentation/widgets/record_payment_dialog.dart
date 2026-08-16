@@ -13,7 +13,7 @@ Future<double?> showRecordPaymentDialog(
     builder: (context) => AlertDialog(
       title: const Text('Record Payment'),
       content: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           Text(
             'Amount due: Rs. ${amountDue.toStringAsFixed(0)}',
@@ -22,7 +22,7 @@ Future<double?> showRecordPaymentDialog(
           const SizedBox(height: 16),
           TextField(
             controller: amountController,
-            keyboardType: TextInputType.number,
+            keyboardType: .number,
             decoration: const InputDecoration(
               labelText: 'Amount (Rs.)',
               hintText: 'e.g., 5000',

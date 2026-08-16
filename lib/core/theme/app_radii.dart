@@ -6,7 +6,5 @@ class AppRadii {
 
   static const double field = 8;
 
-  static const BorderRadius fieldRadius = BorderRadius.all(
-    Radius.circular(field),
-  );
+  static const BorderRadius fieldRadius = .all(.circular(field));
 }

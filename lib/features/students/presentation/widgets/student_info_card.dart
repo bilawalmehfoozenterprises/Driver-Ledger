@@ -12,11 +12,11 @@ class StudentInfoCard extends StatelessWidget {
 
   String _shiftLabel(Shift shift) {
     switch (shift) {
-      case Shift.morning:
+      case .morning:
         return 'Morning';
-      case Shift.afternoon:
+      case .afternoon:
         return 'Afternoon';
-      case Shift.both:
+      case .both:
         return 'Both';
     }
   }
@@ -31,7 +31,7 @@ class StudentInfoCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Row(
               children: [
@@ -39,7 +39,7 @@ class StudentInfoCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Text(student.name, style: theme.textTheme.titleLarge),
                       Text(

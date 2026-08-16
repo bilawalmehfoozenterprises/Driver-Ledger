@@ -115,7 +115,7 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: EdgeInsets.fromLTRB(
+          padding: .fromLTRB(
             16,
             8,
             16,
