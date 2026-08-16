@@ -7,6 +7,7 @@ import '../../data/models/monthly_record.dart';
 import '../../data/models/student.dart';
 import '../../data/repositories/monthly_record_repository.dart';
 import '../../data/repositories/student_repository.dart';
+import '../../domain/backfill_calculator.dart';
 import '../viewmodels/monthly_detail_notifier.dart';
 import '../viewmodels/student_detail_notifier.dart';
 import '../viewmodels/students_list_notifier.dart';
@@ -102,10 +103,27 @@ class StudentDetailScreen extends ConsumerWidget {
             ? null
             : state.records.first;
 
+        final hasMissingMonths = calculateMissingMonths(
+          joinDate: student.joinDate,
+          now: DateTime.now(),
+          existingRecords: state.records,
+        ).isNotEmpty;
+
         return Scaffold(
           appBar: AppBar(
             title: Text(student.name),
             actions: [
+              if (hasMissingMonths)
+                IconButton(
+                  icon: const Icon(Icons.history),
+                  tooltip: 'Backfill history',
+                  onPressed: () {
+                    context.pushNamed(
+                      AppRoutes.backfillReview.name,
+                      pathParameters: {'studentId': studentId.toString()},
+                    );
+                  },
+                ),
               if (student.isActive)
                 IconButton(
                   icon: const Icon(Icons.edit),
