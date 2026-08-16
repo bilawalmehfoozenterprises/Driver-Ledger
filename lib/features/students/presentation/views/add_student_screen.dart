@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -102,18 +103,24 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
       appBar: AppBar(
         title: Text(isEditing ? 'Edit student' : 'Add student'),
         actions: [
-          FillMockDataButton(
-            studentId: widget.studentId,
-            onFilled: () => _syncControllers(
-              ref.read(addStudentFormNotifierProvider(widget.studentId)),
+          if (kDebugMode)
+            FillMockDataButton(
+              studentId: widget.studentId,
+              onFilled: () => _syncControllers(
+                ref.read(addStudentFormNotifierProvider(widget.studentId)),
+              ),
             ),
-          ),
         ],
       ),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+          padding: EdgeInsets.fromLTRB(
+            16,
+            8,
+            16,
+            32 + MediaQuery.of(context).padding.bottom,
+          ),
           children: [
             Text(
               isEditing
@@ -132,7 +139,9 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
               parentPhoneController: _parentPhoneController,
               feeController: _feeController,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 8),
+            const Divider(),
+            const SizedBox(height: 16),
             Text('Transport details', style: theme.textTheme.titleMedium),
             const SizedBox(height: 12),
             TransportDetailsFields(

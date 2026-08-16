@@ -56,8 +56,12 @@ class StudentInfoFields extends StatelessWidget {
         TextFormField(
           controller: feeController,
           decoration: const InputDecoration(
-            labelText: 'Monthly fee (Rs.)',
-            prefixIcon: Icon(Icons.payments_outlined),
+            labelText: 'Monthly fee',
+            prefixIcon: Padding(
+              padding: EdgeInsets.only(left: 16, right: 4),
+              child: Text('Rs.', style: TextStyle(fontSize: 16)),
+            ),
+            prefixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
           ),
           keyboardType: TextInputType.number,
           validator: (value) {

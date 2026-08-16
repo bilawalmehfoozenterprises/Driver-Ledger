@@ -31,14 +31,18 @@ class TransportDetailsFields extends StatelessWidget {
       children: [
         Text('Shift', style: theme.textTheme.labelLarge),
         const SizedBox(height: 8),
-        SegmentedButton<Shift>(
-          segments: const [
-            ButtonSegment(value: Shift.morning, label: Text('Morning')),
-            ButtonSegment(value: Shift.afternoon, label: Text('Afternoon')),
-            ButtonSegment(value: Shift.both, label: Text('Both')),
-          ],
-          selected: {selectedShift},
-          onSelectionChanged: (selection) => onShiftChanged(selection.first),
+        SizedBox(
+          width: double.infinity,
+          child: SegmentedButton<Shift>(
+            segments: const [
+              ButtonSegment(value: Shift.morning, label: Text('Morning')),
+              ButtonSegment(value: Shift.afternoon, label: Text('Afternoon')),
+              ButtonSegment(value: Shift.both, label: Text('Both')),
+            ],
+            selected: {selectedShift},
+            onSelectionChanged: (selection) =>
+                onShiftChanged(selection.first),
+          ),
         ),
         const SizedBox(height: 16),
         Card.outlined(
