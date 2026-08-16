@@ -34,114 +34,127 @@ class MonthCard extends StatelessWidget {
     final now = DateTime.now();
     final isCurrentMonth = record.month == now.month && record.year == now.year;
 
-    return Card(
+    return Material(
+      color: colorScheme.surfaceContainerLow,
+      borderRadius: .circular(16),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        borderRadius: .circular(16),
         child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
+          padding: const EdgeInsets.fromLTRB(16, 16, 8, 16),
+          child: Row(
             crossAxisAlignment: .start,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      '${_monthName(record.month)} ${record.year}',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: isCurrentMonth ? .bold : .normal,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _statusColor(
-                        record.status,
-                        colorScheme,
-                      ).withValues(alpha: 0.1),
-                      borderRadius: .circular(8),
-                    ),
-                    child: Text(
-                      record.status,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: _statusColor(record.status, colorScheme),
-                        fontWeight: .bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: .spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      Text(
-                        'Expected',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      Text(
-                        'Rs. ${record.expectedFee.toStringAsFixed(0)}',
-                        style: theme.textTheme.bodyMedium,
-                      ),
-                    ],
-                  ),
-                  if (record.vacationDays > 0)
-                    Column(
-                      crossAxisAlignment: .center,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    Row(
                       children: [
-                        Text(
-                          'Vacation',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
+                        Expanded(
+                          child: Text(
+                            '${_monthName(record.month)} ${record.year}',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: isCurrentMonth ? .bold : .normal,
+                            ),
                           ),
                         ),
-                        Text(
-                          '${record.vacationDays} days',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.tertiary,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _statusColor(
+                              record.status,
+                              colorScheme,
+                            ).withValues(alpha: 0.1),
+                            borderRadius: .circular(8),
+                          ),
+                          child: Text(
+                            record.status,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: _statusColor(record.status, colorScheme),
+                              fontWeight: .bold,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                  Column(
-                    crossAxisAlignment: .end,
-                    children: [
-                      Text(
-                        'Paid',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: .spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text(
+                              'Expected',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              'Rs. ${record.expectedFee.toStringAsFixed(0)}',
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                          ],
                         ),
-                      ),
+                        if (record.vacationDays > 0)
+                          Column(
+                            crossAxisAlignment: .center,
+                            children: [
+                              Text(
+                                'Vacation',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              Text(
+                                '${record.vacationDays} days',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.tertiary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        Column(
+                          crossAxisAlignment: .end,
+                          children: [
+                            Text(
+                              'Paid',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              'Rs. ${record.totalPaid.toStringAsFixed(0)}',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: record.isFullyPaid
+                                    ? colorScheme.primary
+                                    : colorScheme.onSurface,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    if (record.deductionAmount > 0) ...[
+                      const SizedBox(height: 8),
                       Text(
-                        'Rs. ${record.totalPaid.toStringAsFixed(0)}',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: record.isFullyPaid
-                              ? colorScheme.primary
-                              : colorScheme.onSurface,
+                        'Deduction: Rs. ${record.deductionAmount.toStringAsFixed(0)}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.tertiary,
                         ),
                       ),
                     ],
-                  ),
-                ],
-              ),
-              if (record.deductionAmount > 0) ...[
-                const SizedBox(height: 8),
-                Text(
-                  'Deduction: Rs. ${record.deductionAmount.toStringAsFixed(0)}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.tertiary,
-                  ),
+                  ],
                 ),
-              ],
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: colorScheme.onSurfaceVariant,
+              ),
             ],
           ),
         ),

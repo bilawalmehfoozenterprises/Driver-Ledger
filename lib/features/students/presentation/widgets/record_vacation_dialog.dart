@@ -14,6 +14,7 @@ Future<int?> showRecordVacationDialog(
       title: const Text('Record Vacation'),
       content: Column(
         mainAxisSize: .min,
+        crossAxisAlignment: .start,
         children: [
           Text(
             'Current vacation days: $currentVacationDays',

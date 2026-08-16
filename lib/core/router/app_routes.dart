@@ -6,6 +6,7 @@ enum AppRoutes {
   addStudent('add-student', '/students/add'),
   editStudent('edit-student', '/students/:id/edit'),
   studentDetail('student-detail', '/students/:id'),
+  paymentHistory('payment-history', '/students/:id/history'),
   monthlyDetail(
     'monthly-detail',
     '/students/:studentId/months/:monthId',

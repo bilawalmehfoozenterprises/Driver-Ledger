@@ -5,15 +5,18 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../data/models/monthly_record.dart';
 import '../../data/models/student.dart';
+import '../../data/repositories/monthly_record_repository.dart';
 import '../../data/repositories/student_repository.dart';
+import '../viewmodels/monthly_detail_notifier.dart';
 import '../viewmodels/student_detail_notifier.dart';
 import '../viewmodels/students_list_notifier.dart';
 import '../widgets/deactivate_student_dialog.dart';
-import '../widgets/monthly_records_list.dart';
-import '../widgets/student_header_band.dart';
+import '../widgets/record_payment_dialog.dart';
+import '../widgets/record_vacation_dialog.dart';
 import '../widgets/student_info_grid.dart';
+import '../widgets/this_month_card.dart';
 
-/// Student detail screen - shows monthly history
+/// Student detail screen - shows this month's status, student info, and history
 class StudentDetailScreen extends ConsumerWidget {
   final int studentId;
 
@@ -36,6 +39,41 @@ class StudentDetailScreen extends ConsumerWidget {
         context.pop();
       }
     }
+  }
+
+  Future<void> _recordPayment(
+    BuildContext context,
+    WidgetRef ref,
+    MonthlyRecord record,
+  ) async {
+    final amount = await showRecordPaymentDialog(
+      context,
+      amountDue: record.amountDue,
+    );
+    if (amount == null) return;
+
+    await ref
+        .read(monthlyRecordRepositoryProvider)
+        .recordPayment(record.id!, amount);
+    ref.invalidate(studentDetailNotifierProvider(studentId));
+  }
+
+  Future<void> _recordVacation(
+    BuildContext context,
+    WidgetRef ref,
+    MonthlyRecord record,
+  ) async {
+    final days = await showRecordVacationDialog(
+      context,
+      currentVacationDays: record.vacationDays,
+    );
+    if (days == null) return;
+
+    final deduction = calculateVacationDeduction(record.expectedFee, days);
+    await ref
+        .read(monthlyRecordRepositoryProvider)
+        .recordVacation(record.id!, days, deduction);
+    ref.invalidate(studentDetailNotifierProvider(studentId));
   }
 
   @override
@@ -63,90 +101,47 @@ class StudentDetailScreen extends ConsumerWidget {
         final currentRecord = state.records.isEmpty
             ? null
             : state.records.first;
-        final colors = studentBandColors(
-          Theme.of(context).colorScheme,
-          currentRecord,
-        );
 
         return Scaffold(
-          body: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                pinned: true,
-                expandedHeight: 160,
-                backgroundColor: colors.band,
-                foregroundColor: colors.onBand,
-                iconTheme: IconThemeData(color: colors.onBand),
-                actions: [
-                  if (student.isActive)
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () async {
-                        await context.pushNamed(
-                          AppRoutes.editStudent.name,
-                          pathParameters: {'id': studentId.toString()},
-                        );
-                        ref.invalidate(
-                          studentDetailNotifierProvider(studentId),
-                        );
-                      },
-                    ),
-                  if (student.isActive)
-                    IconButton(
-                      icon: const Icon(Icons.person_off),
-                      onPressed: () =>
-                          _deactivateStudent(context, ref, student),
-                    ),
-                ],
-                flexibleSpace: FlexibleSpaceBar(
-                  background: StudentHeaderBand(
-                    student: student,
-                    currentRecord: currentRecord,
-                  ),
+          appBar: AppBar(
+            title: Text(student.name),
+            actions: [
+              if (student.isActive)
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () async {
+                    await context.pushNamed(
+                      AppRoutes.editStudent.name,
+                      pathParameters: {'id': studentId.toString()},
+                    );
+                    ref.invalidate(studentDetailNotifierProvider(studentId));
+                  },
                 ),
-              ),
-              SliverToBoxAdapter(child: StudentInfoGrid(student: student)),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                  child: Text(
-                    'MONTHS',
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
+              if (student.isActive)
+                IconButton(
+                  icon: const Icon(Icons.person_off),
+                  onPressed: () => _deactivateStudent(context, ref, student),
                 ),
-              ),
-              if (state.records.isEmpty)
-                const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 24,
-                    ),
-                    child: Text('No monthly records yet'),
-                  ),
-                )
-              else
-                SliverToBoxAdapter(
-                  child: MonthlyRecordsList(
-                    records: state.records,
-                    onRecordTap: (MonthlyRecord record) async {
-                      await context.pushNamed(
-                        AppRoutes.monthlyDetail.name,
-                        pathParameters: {
-                          'studentId': studentId.toString(),
-                          'monthId': record.id.toString(),
-                        },
-                      );
-                      ref.invalidate(
-                        studentDetailNotifierProvider(studentId),
-                      );
-                    },
-                  ),
+            ],
+          ),
+          body: ListView(
+            children: [
+              StudentInfoGrid(student: student),
+              if (currentRecord != null)
+                ThisMonthCard(
+                  record: currentRecord,
+                  onRecordPayment: () =>
+                      _recordPayment(context, ref, currentRecord),
+                  onRecordVacation: () =>
+                      _recordVacation(context, ref, currentRecord),
+                  onViewHistory: () {
+                    context.pushNamed(
+                      AppRoutes.paymentHistory.name,
+                      pathParameters: {'id': studentId.toString()},
+                    );
+                  },
                 ),
-              const SliverToBoxAdapter(child: SizedBox(height: 24)),
+              const SizedBox(height: 24),
             ],
           ),
         );

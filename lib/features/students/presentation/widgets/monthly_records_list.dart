@@ -24,8 +24,10 @@ class MonthlyRecordsList extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          for (final record in records)
+          for (final record in records) ...[
             MonthCard(record: record, onTap: () => onRecordTap(record)),
+            if (record != records.last) const SizedBox(height: 8),
+          ],
         ],
       ),
     );

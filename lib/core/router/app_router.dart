@@ -5,6 +5,7 @@ import '../../features/home/presentation/views/home_screen.dart';
 import '../../features/students/presentation/views/students_screen.dart';
 import '../../features/students/presentation/views/add_student_screen.dart';
 import '../../features/students/presentation/views/student_detail_screen.dart';
+import '../../features/students/presentation/views/payment_history_screen.dart';
 import '../../features/students/presentation/views/monthly_detail_screen.dart';
 import '../../shared/widgets/app_scaffold.dart';
 import 'app_routes.dart';
@@ -52,6 +53,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final id = int.parse(state.pathParameters['id']!);
           return StudentDetailScreen(studentId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.paymentHistory.path,
+        name: AppRoutes.paymentHistory.name,
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return PaymentHistoryScreen(studentId: id);
         },
       ),
       GoRoute(

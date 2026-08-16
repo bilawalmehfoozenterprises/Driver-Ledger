@@ -14,6 +14,7 @@ Future<double?> showRecordPaymentDialog(
       title: const Text('Record Payment'),
       content: Column(
         mainAxisSize: .min,
+        crossAxisAlignment: .start,
         children: [
           Text(
             'Amount due: Rs. ${amountDue.toStringAsFixed(0)}',
