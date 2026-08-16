@@ -1,3 +1,5 @@
+import 'package:driver_ledger/features/students/data/models/monthly_record.dart';
+import 'package:driver_ledger/features/students/data/models/student.dart';
 import 'package:driver_ledger/features/students/data/repositories/monthly_record_repository.dart';
 import 'package:driver_ledger/features/students/data/repositories/student_repository.dart';
 import 'package:driver_ledger/features/students/presentation/viewmodels/add_student_form_notifier.dart';
@@ -34,6 +36,13 @@ GoRouter _buildRouter() {
       GoRoute(
         path: '/students/add',
         builder: (context, state) => const AddStudentScreen(studentId: null),
+      ),
+      GoRoute(
+        path: '/students/:id/edit',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return AddStudentScreen(studentId: id);
+        },
       ),
       GoRoute(
         path: '/students/:studentId/backfill',
@@ -181,6 +190,129 @@ void main() {
         for (final record in records) {
           expect(record.totalPaid, 0);
         }
+      },
+    );
+  });
+
+  group('AddStudentScreen join-date-edited-earlier trigger', () {
+    testWidgets(
+      'editing joinDate earlier with existing records opens Backfill bounded to the newly exposed gap',
+      (tester) async {
+        final router = _buildRouter();
+        final existingStudent = Student(
+          id: 1,
+          name: 'Bilal',
+          monthlyFee: 3000,
+          shift: .both,
+          joinDate: DateTime(2024, 3, 1),
+          createdAt: DateTime(2024, 3, 1),
+        );
+        final studentRepository = FakeStudentRepository(
+          students: [existingStudent],
+        );
+        final recordRepository = FakeMonthlyRecordRepository(
+          records: [
+            MonthlyRecord(
+              id: 1,
+              studentId: 1,
+              month: 3,
+              year: 2024,
+              expectedFee: 3000,
+              createdAt: DateTime(2024, 3, 1),
+            ),
+            MonthlyRecord(
+              id: 2,
+              studentId: 1,
+              month: 4,
+              year: 2024,
+              expectedFee: 3000,
+              createdAt: DateTime(2024, 4, 1),
+            ),
+          ],
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              studentRepositoryProvider.overrideWithValue(studentRepository),
+              monthlyRecordRepositoryProvider.overrideWithValue(
+                recordRepository,
+              ),
+            ],
+            child: _App(router: router),
+          ),
+        );
+        await tester.pumpAndSettle();
+        router.push('/students/1/edit');
+        await tester.pumpAndSettle();
+
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(AddStudentScreen)),
+        );
+        container
+            .read(addStudentFormNotifierProvider(1).notifier)
+            .updateJoinDate(DateTime(2024, 1, 1));
+
+        await _tapSaveButton(tester);
+
+        expect(find.byType(BackfillReviewScreen), findsOneWidget);
+        // Only January and February 2024 are newly exposed; March/April
+        // already have records and must not be re-presented.
+        expect(find.text('January 2024'), findsOneWidget);
+        expect(find.text('February 2024'), findsOneWidget);
+        expect(find.text('March 2024'), findsNothing);
+        expect(find.text('April 2024'), findsNothing);
+        // This entry point does not support skipping.
+        expect(find.widgetWithText(OutlinedButton, 'Skip'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'editing joinDate earlier with no existing records falls through to normal save',
+      (tester) async {
+        final router = _buildRouter();
+        final existingStudent = Student(
+          id: 1,
+          name: 'Bilal',
+          monthlyFee: 3000,
+          shift: .both,
+          joinDate: DateTime(2024, 3, 1),
+          createdAt: DateTime(2024, 3, 1),
+        );
+        final studentRepository = FakeStudentRepository(
+          students: [existingStudent],
+        );
+        final recordRepository = FakeMonthlyRecordRepository();
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              studentRepositoryProvider.overrideWithValue(studentRepository),
+              monthlyRecordRepositoryProvider.overrideWithValue(
+                recordRepository,
+              ),
+            ],
+            child: _App(router: router),
+          ),
+        );
+        await tester.pumpAndSettle();
+        router.push('/students/1/edit');
+        await tester.pumpAndSettle();
+
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(AddStudentScreen)),
+        );
+        container
+            .read(addStudentFormNotifierProvider(1).notifier)
+            .updateJoinDate(DateTime(2024, 1, 1));
+
+        await _tapSaveButton(tester);
+
+        expect(find.byType(BackfillReviewScreen), findsNothing);
+        expect(
+          studentRepository.students.first.joinDate,
+          DateTime(2024, 1, 1),
+        );
       },
     );
   });

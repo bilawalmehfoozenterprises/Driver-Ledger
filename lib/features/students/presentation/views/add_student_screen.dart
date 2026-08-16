@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_routes.dart';
+import '../../data/repositories/monthly_record_repository.dart';
 import '../../domain/backfill_calculator.dart';
 import '../viewmodels/add_student_form_notifier.dart';
 import '../widgets/fill_mock_data_button.dart';
@@ -71,6 +72,9 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final isNewStudent = widget.studentId == null;
+    final formState = ref.read(addStudentFormNotifierProvider(widget.studentId));
+    final originalJoinDate = formState.originalJoinDate;
+    final editedJoinDate = formState.joinDate;
 
     final student = await ref
         .read(addStudentFormNotifierProvider(widget.studentId).notifier)
@@ -94,9 +98,23 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
         );
         return;
       }
+    } else if (originalJoinDate != null &&
+        editedJoinDate.isBefore(originalJoinDate)) {
+      final records = await ref
+          .read(monthlyRecordRepositoryProvider)
+          .getRecordsForStudent(student.id!);
+
+      if (records.isNotEmpty) {
+        if (!mounted) return;
+        context.pushReplacementNamed(
+          AppRoutes.backfillReview.name,
+          pathParameters: {'studentId': student.id.toString()},
+        );
+        return;
+      }
     }
 
-    context.pop();
+    if (mounted) context.pop();
   }
 
   @override
