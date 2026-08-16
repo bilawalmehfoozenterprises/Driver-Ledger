@@ -12,6 +12,7 @@ import {
   useFonts,
 } from '@expo-google-fonts/inter';
 import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 
 // Keep the splash screen visible until the bundled font files are ready.
@@ -45,6 +46,7 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
+      <StatusBar style="dark" />
       <ErrorBoundary>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <KeyboardProvider>
