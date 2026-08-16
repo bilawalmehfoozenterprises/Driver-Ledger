@@ -33,6 +33,7 @@ dependencies:
 
   # State management
   flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
 
   # Navigation
   go_router: ^14.8.1
@@ -55,6 +56,10 @@ dev_dependencies:
 
   # Linting
   flutter_lints: ^5.0.0
+
+  # Code generation
+  build_runner: ^2.4.13
+  riverpod_generator: ^2.6.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
