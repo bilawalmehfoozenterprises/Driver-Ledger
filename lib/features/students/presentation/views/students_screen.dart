@@ -1,192 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:driver_ledger/core/enums/enums.dart';
-import 'package:driver_ledger/features/students/presentation/viewmodels/student_viewmodel.dart';
 
-class StudentsScreen extends ConsumerWidget {
+import '../../../../core/enums/enums.dart';
+import '../../data/models/student.dart';
+import '../../data/repositories/student_repository.dart';
+
+/// Students screen - List of all students
+class StudentsScreen extends StatefulWidget {
   const StudentsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final studentsAsync = ref.watch(studentsProvider);
+  State<StudentsScreen> createState() => _StudentsScreenState();
+}
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Students')),
-      body: studentsAsync.when(
-        data: (students) {
-          if (students.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.people_outline,
-                    size: 80,
-                    color: colorScheme.primary,
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'No Students Yet',
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      color: colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Add your first student to get started',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
+class _StudentsScreenState extends State<StudentsScreen> {
+  List<Student> _activeStudents = [];
+  List<Student> _inactiveStudents = [];
+  bool _isLoading = true;
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: students.length,
-            itemBuilder: (context, index) {
-              final student = students[index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(16),
-                  leading: CircleAvatar(
-                    backgroundColor: student.isActive
-                        ? colorScheme.primaryContainer
-                        : colorScheme.surfaceContainerHighest,
-                    child: Icon(
-                      Icons.person,
-                      color: student.isActive
-                          ? colorScheme.onPrimaryContainer
-                          : colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  title: Text(
-                    student.name,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: student.isActive
-                          ? colorScheme.onSurface
-                          : colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 4),
-                      Text(
-                        'Parent: ${student.parentName}',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Phone: ${student.parentPhone}',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Row(
-                        children: [
-                          Icon(
-                            _getShiftIcon(student.shift),
-                            size: 16,
-                            color: colorScheme.primary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            _getShiftLabel(student.shift),
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.primary,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Text(
-                            '\$${student.currentFee.toStringAsFixed(0)}/month',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  trailing: PopupMenuButton<String>(
-                    onSelected: (value) async {
-                      final notifier = ref.read(studentsProvider.notifier);
-                      switch (value) {
-                        case 'activate':
-                          await notifier.activate(student.id!);
-                          break;
-                        case 'deactivate':
-                          await notifier.deactivate(student.id!);
-                          break;
-                        case 'delete':
-                          await notifier.delete(student.id!);
-                          break;
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      if (!student.isActive)
-                        const PopupMenuItem(
-                          value: 'activate',
-                          child: ListTile(
-                            leading: Icon(Icons.person_add),
-                            title: Text('Activate'),
-                          ),
-                        ),
-                      if (student.isActive)
-                        const PopupMenuItem(
-                          value: 'deactivate',
-                          child: ListTile(
-                            leading: Icon(Icons.person_remove),
-                            title: Text('Deactivate'),
-                          ),
-                        ),
-                      const PopupMenuItem(
-                        value: 'delete',
-                        child: ListTile(
-                          leading: Icon(Icons.delete),
-                          title: Text('Delete'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/students/add'),
-        icon: const Icon(Icons.person_add),
-        label: const Text('Add Student'),
-      ),
-    );
+  @override
+  void initState() {
+    super.initState();
+    _loadStudents();
   }
 
-  IconData _getShiftIcon(Shift shift) {
-    switch (shift) {
-      case Shift.morning:
-        return Icons.wb_sunny;
-      case Shift.afternoon:
-        return Icons.wb_cloudy;
-      case Shift.both:
-        return Icons.wb_sunny_outlined;
-    }
+  Future<void> _loadStudents() async {
+    setState(() => _isLoading = true);
+    final allStudents = await StudentRepository.getAllStudents();
+    setState(() {
+      _activeStudents = allStudents.where((s) => s.isActive).toList();
+      _inactiveStudents = allStudents.where((s) => !s.isActive).toList();
+      _isLoading = false;
+    });
   }
 
-  String _getShiftLabel(Shift shift) {
+  String _shiftLabel(Shift shift) {
     switch (shift) {
       case Shift.morning:
         return 'Morning';
@@ -195,5 +43,184 @@ class StudentsScreen extends ConsumerWidget {
       case Shift.both:
         return 'Both';
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Students')),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _activeStudents.isEmpty && _inactiveStudents.isEmpty
+          ? _buildEmptyState(theme, colorScheme)
+          : _buildStudentList(theme, colorScheme),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          await context.push('/students/add');
+          _loadStudents();
+        },
+        icon: const Icon(Icons.person_add),
+        label: const Text('Add Student'),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(ThemeData theme, ColorScheme colorScheme) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.people_outlined, size: 80, color: colorScheme.primary),
+            const SizedBox(height: 24),
+            Text(
+              'No Students Yet',
+              style: theme.textTheme.headlineMedium?.copyWith(
+                color: colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Add your first student to start tracking payments.',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStudentList(ThemeData theme, ColorScheme colorScheme) {
+    return RefreshIndicator(
+      onRefresh: _loadStudents,
+      child: ListView(
+        children: [
+          if (_activeStudents.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text(
+                'Active Students',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+            ..._activeStudents.map(
+              (student) => _buildStudentCard(student, theme, colorScheme),
+            ),
+          ],
+          if (_inactiveStudents.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+              child: Text(
+                'Inactive Students',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+            ..._inactiveStudents.map(
+              (student) => _buildStudentCard(
+                student,
+                theme,
+                colorScheme,
+                isInactive: true,
+              ),
+            ),
+          ],
+          const SizedBox(height: 80),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStudentCard(
+    Student student,
+    ThemeData theme,
+    ColorScheme colorScheme, {
+    bool isInactive = false,
+  }) {
+    return Card(
+      child: InkWell(
+        onTap: isInactive
+            ? null
+            : () async {
+                await context.push('/students/${student.id}');
+                _loadStudents();
+              },
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Opacity(
+            opacity: isInactive ? 0.6 : 1.0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            student.name,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            student.parentPhone ?? 'No phone number',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          'Rs. ${student.monthlyFee.toStringAsFixed(0)}',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colorScheme.secondaryContainer,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            _shiftLabel(student.shift),
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onSecondaryContainer,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -26,21 +26,6 @@ class AppScaffold extends StatelessWidget {
             selectedIcon: Icon(Icons.people),
             label: 'Students',
           ),
-          NavigationDestination(
-            icon: Icon(Icons.calendar_today_outlined),
-            selectedIcon: Icon(Icons.calendar_today),
-            label: 'Bookings',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.receipt_long_outlined),
-            selectedIcon: Icon(Icons.receipt_long),
-            label: 'Expenses',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.bar_chart_outlined),
-            selectedIcon: Icon(Icons.bar_chart),
-            label: 'Reports',
-          ),
         ],
       ),
     );
@@ -49,9 +34,6 @@ class AppScaffold extends StatelessWidget {
   int _calculateSelectedIndex(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
     if (location.startsWith('/students')) return 1;
-    if (location.startsWith('/bookings')) return 2;
-    if (location.startsWith('/expenses')) return 3;
-    if (location.startsWith('/reports')) return 4;
     return 0;
   }
 
@@ -62,15 +44,6 @@ class AppScaffold extends StatelessWidget {
         break;
       case 1:
         context.go('/students');
-        break;
-      case 2:
-        context.go('/bookings');
-        break;
-      case 3:
-        context.go('/expenses');
-        break;
-      case 4:
-        context.go('/reports');
         break;
     }
   }

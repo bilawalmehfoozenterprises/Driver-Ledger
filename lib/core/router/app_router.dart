@@ -4,10 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/home/presentation/views/home_screen.dart';
 import '../../features/students/presentation/views/students_screen.dart';
 import '../../features/students/presentation/views/add_student_screen.dart';
-import '../../features/bookings/presentation/views/bookings_screen.dart';
-import '../../features/expenses/presentation/views/expenses_screen.dart';
-import '../../features/reports/presentation/views/reports_screen.dart';
-import '../../features/settings/presentation/views/settings_screen.dart';
+import '../../features/students/presentation/views/student_detail_screen.dart';
+import '../../features/students/presentation/views/monthly_detail_screen.dart';
 import '../../shared/widgets/app_scaffold.dart';
 
 /// Main router provider
@@ -32,36 +30,32 @@ final routerProvider = Provider<GoRouter>((ref) {
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: StudentsScreen()),
           ),
-          GoRoute(
-            path: '/bookings',
-            name: 'bookings',
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: BookingsScreen()),
-          ),
-          GoRoute(
-            path: '/expenses',
-            name: 'expenses',
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: ExpensesScreen()),
-          ),
-          GoRoute(
-            path: '/reports',
-            name: 'reports',
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: ReportsScreen()),
-          ),
-          GoRoute(
-            path: '/settings',
-            name: 'settings',
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: SettingsScreen()),
-          ),
         ],
       ),
       GoRoute(
         path: '/students/add',
         name: 'add-student',
         builder: (context, state) => const AddStudentScreen(),
+      ),
+      GoRoute(
+        path: '/students/:id',
+        name: 'student-detail',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return StudentDetailScreen(studentId: id);
+        },
+      ),
+      GoRoute(
+        path: '/students/:studentId/months/:monthId',
+        name: 'monthly-detail',
+        builder: (context, state) {
+          final studentId = int.parse(state.pathParameters['studentId']!);
+          final monthId = int.parse(state.pathParameters['monthId']!);
+          return MonthlyDetailScreen(
+            studentId: studentId,
+            monthRecordId: monthId,
+          );
+        },
       ),
     ],
   );

@@ -4,11 +4,9 @@ class MonthlyRecord {
   final int month;
   final int year;
   final double expectedFee;
+  final int vacationDays;
+  final double deductionAmount;
   final double totalPaid;
-  final bool isVacation;
-  final int? vacationDays;
-  final double? deductionAmount;
-  final String? notes;
   final DateTime createdAt;
 
   const MonthlyRecord({
@@ -17,19 +15,23 @@ class MonthlyRecord {
     required this.month,
     required this.year,
     required this.expectedFee,
+    this.vacationDays = 0,
+    this.deductionAmount = 0,
     this.totalPaid = 0,
-    this.isVacation = false,
-    this.vacationDays,
-    this.deductionAmount,
-    this.notes,
     required this.createdAt,
   });
 
-  double get amountDue => expectedFee - (deductionAmount ?? 0);
+  double get amountDue => expectedFee - deductionAmount;
 
   double get balance => amountDue - totalPaid;
 
   bool get isFullyPaid => balance <= 0;
+
+  String get status {
+    if (isFullyPaid) return 'Paid';
+    if (totalPaid > 0) return 'Partial';
+    return 'Unpaid';
+  }
 
   MonthlyRecord copyWith({
     int? id,
@@ -37,11 +39,9 @@ class MonthlyRecord {
     int? month,
     int? year,
     double? expectedFee,
-    double? totalPaid,
-    bool? isVacation,
     int? vacationDays,
     double? deductionAmount,
-    String? notes,
+    double? totalPaid,
     DateTime? createdAt,
   }) {
     return MonthlyRecord(
@@ -50,11 +50,9 @@ class MonthlyRecord {
       month: month ?? this.month,
       year: year ?? this.year,
       expectedFee: expectedFee ?? this.expectedFee,
-      totalPaid: totalPaid ?? this.totalPaid,
-      isVacation: isVacation ?? this.isVacation,
       vacationDays: vacationDays ?? this.vacationDays,
       deductionAmount: deductionAmount ?? this.deductionAmount,
-      notes: notes ?? this.notes,
+      totalPaid: totalPaid ?? this.totalPaid,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -66,11 +64,9 @@ class MonthlyRecord {
       'month': month,
       'year': year,
       'expected_fee': expectedFee,
-      'total_paid': totalPaid,
-      'is_vacation': isVacation ? 1 : 0,
       'vacation_days': vacationDays,
       'deduction_amount': deductionAmount,
-      'notes': notes,
+      'total_paid': totalPaid,
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -82,11 +78,9 @@ class MonthlyRecord {
       month: map['month'] as int,
       year: map['year'] as int,
       expectedFee: (map['expected_fee'] as num).toDouble(),
-      totalPaid: (map['total_paid'] as num).toDouble(),
-      isVacation: (map['is_vacation'] as int) == 1,
-      vacationDays: map['vacation_days'] as int?,
-      deductionAmount: (map['deduction_amount'] as num?)?.toDouble(),
-      notes: map['notes'] as String?,
+      vacationDays: map['vacation_days'] as int? ?? 0,
+      deductionAmount: (map['deduction_amount'] as num?)?.toDouble() ?? 0,
+      totalPaid: (map['total_paid'] as num?)?.toDouble() ?? 0,
       createdAt: DateTime.parse(map['created_at'] as String),
     );
   }

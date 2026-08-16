@@ -2,18 +2,13 @@ import '../../../../core/database/database_helper.dart';
 import '../models/student.dart';
 
 class StudentRepository {
-  Future<int> insert(Student student) async {
+  static Future<List<Student>> getAllStudents() async {
     final db = await DatabaseHelper.database;
-    return await db.insert('students', student.toMap());
-  }
-
-  Future<List<Student>> getAll() async {
-    final db = await DatabaseHelper.database;
-    final maps = await db.query('students', orderBy: 'created_at DESC');
+    final maps = await db.query('students', orderBy: 'name ASC');
     return maps.map((map) => Student.fromMap(map)).toList();
   }
 
-  Future<List<Student>> getActive() async {
+  static Future<List<Student>> getActiveStudents() async {
     final db = await DatabaseHelper.database;
     final maps = await db.query(
       'students',
@@ -24,14 +19,19 @@ class StudentRepository {
     return maps.map((map) => Student.fromMap(map)).toList();
   }
 
-  Future<Student?> getById(int id) async {
+  static Future<Student?> getStudent(int id) async {
     final db = await DatabaseHelper.database;
     final maps = await db.query('students', where: 'id = ?', whereArgs: [id]);
     if (maps.isEmpty) return null;
     return Student.fromMap(maps.first);
   }
 
-  Future<void> update(Student student) async {
+  static Future<int> insertStudent(Student student) async {
+    final db = await DatabaseHelper.database;
+    return await db.insert('students', student.toMap());
+  }
+
+  static Future<void> updateStudent(Student student) async {
     final db = await DatabaseHelper.database;
     await db.update(
       'students',
@@ -41,7 +41,7 @@ class StudentRepository {
     );
   }
 
-  Future<void> deactivate(int id) async {
+  static Future<void> deactivateStudent(int id) async {
     final db = await DatabaseHelper.database;
     await db.update(
       'students',
@@ -49,20 +49,5 @@ class StudentRepository {
       where: 'id = ?',
       whereArgs: [id],
     );
-  }
-
-  Future<void> activate(int id) async {
-    final db = await DatabaseHelper.database;
-    await db.update(
-      'students',
-      {'is_active': 1},
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-  }
-
-  Future<void> delete(int id) async {
-    final db = await DatabaseHelper.database;
-    await db.delete('students', where: 'id = ?', whereArgs: [id]);
   }
 }
