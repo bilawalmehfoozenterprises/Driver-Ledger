@@ -45,5 +45,5 @@ A student currently being transported. Inactive students are preserved in histor
 _Aavoid_: enabled, current
 
 **Backfill**:
-Creating Monthly Records for past months that don't yet exist for a student, covering the gap between their join date and the current month. Triggered when adding a student with a past join date, editing a join date to an earlier date, or manually from the student detail screen for a student with missing months. Presented via a review screen where each missing month's expected fee and amount paid can be set before saving.
+Creating Monthly Records for past months that don't yet exist for a student, covering the gap between their join date and the current month. Triggered when adding a student with a past join date, editing a join date to an earlier date, or manually from the student detail screen for a student with missing months. Presented via a review screen where each missing month's expected fee and amount paid can be set before saving. Editing a join date to a later date can also delete existing Monthly Records that now predate it, subject to explicit user confirmation.
 _Avoid_: migration, historical import, catch-up
