@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/home/presentation/views/home_screen.dart';
 import '../../features/students/presentation/views/students_screen.dart';
+import '../../features/students/presentation/views/add_student_screen.dart';
 import '../../features/bookings/presentation/views/bookings_screen.dart';
 import '../../features/expenses/presentation/views/expenses_screen.dart';
 import '../../features/reports/presentation/views/reports_screen.dart';
@@ -22,46 +23,45 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/',
             name: 'home',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: HomeScreen(),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: HomeScreen()),
           ),
           GoRoute(
             path: '/students',
             name: 'students',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: StudentsScreen(),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: StudentsScreen()),
           ),
           GoRoute(
             path: '/bookings',
             name: 'bookings',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: BookingsScreen(),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: BookingsScreen()),
           ),
           GoRoute(
             path: '/expenses',
             name: 'expenses',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: ExpensesScreen(),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ExpensesScreen()),
           ),
           GoRoute(
             path: '/reports',
             name: 'reports',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: ReportsScreen(),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ReportsScreen()),
           ),
           GoRoute(
             path: '/settings',
             name: 'settings',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: SettingsScreen(),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: SettingsScreen()),
           ),
         ],
+      ),
+      GoRoute(
+        path: '/students/add',
+        name: 'add-student',
+        builder: (context, state) => const AddStudentScreen(),
       ),
     ],
   );
