@@ -1,0 +1,71 @@
+name: Feature request
+description: Suggest an idea or improvement for Driver Ledger
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion! Grounding it in a real scenario (who hits
+        this, and when) makes it much easier to design and prioritize.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the gap or pain point. Who runs into it, and when?
+      placeholder: |
+        As a driver with 20+ students, I can't tell at a glance who hasn't
+        paid this month — I have to open each student individually.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: What would you like to happen? Be as specific as you can — which screen, what action, what result.
+      placeholder: |
+        Add a filter/sort on the students list to show unpaid students first,
+        with a badge showing amount due.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches you thought about, and why you preferred this one.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area of the app
+      description: Which part of Driver Ledger does this affect?
+      multiple: true
+      options:
+        - Students
+        - Monthly records / payments
+        - Home / dashboard
+        - Navigation
+        - Other
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Mockups, related issues, or anything else useful.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and didn't find a duplicate.
+          required: true

@@ -1,0 +1,106 @@
+name: Bug report
+description: Report something in Driver Ledger that isn't working as expected
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out as much
+        of this as you can — it saves a lot of back-and-forth.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug. What did you expect instead?
+      placeholder: |
+        When I mark a student's month as Paid, the payment status still
+        shows "Unpaid" after reopening the app.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Exact steps so we can reproduce it reliably.
+      placeholder: |
+        1. Open a student's monthly record
+        2. Enter a payment amount equal to the amount due
+        3. Close and reopen the app
+        4. Payment status shows "Unpaid" instead of "Paid"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How much does this affect using the app?
+      options:
+        - "Blocker — app crashes or data is lost/corrupted"
+        - "Major — a feature doesn't work as intended"
+        - "Minor — cosmetic or edge-case issue"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      multiple: true
+      options:
+        - Android
+        - iOS
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Device and OS version
+      placeholder: "e.g. Pixel 7, Android 14 / iPhone 14, iOS 17.4"
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: App version or commit
+      placeholder: "e.g. 1.0.0+1, or a commit hash"
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or stack trace
+      description: Paste any relevant output from `flutter run` or `flutter analyze`.
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or screen recording
+      description: Drag and drop images or a video here, if applicable.
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Anything else worth knowing — related issues, things you already tried, etc.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and didn't find a duplicate.
+          required: true
