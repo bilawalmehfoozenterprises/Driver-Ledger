@@ -316,4 +316,239 @@ void main() {
       },
     );
   });
+
+  group('AddStudentScreen join-date-edited-later trigger', () {
+    Student existingStudent() => Student(
+      id: 1,
+      name: 'Bilal',
+      monthlyFee: 3000,
+      shift: .both,
+      joinDate: DateTime(2024, 3, 1),
+      createdAt: DateTime(2024, 3, 1),
+    );
+
+    List<MonthlyRecord> existingRecords() => [
+      MonthlyRecord(
+        id: 1,
+        studentId: 1,
+        month: 3,
+        year: 2024,
+        expectedFee: 3000,
+        createdAt: DateTime(2024, 3, 1),
+      ),
+      MonthlyRecord(
+        id: 2,
+        studentId: 1,
+        month: 4,
+        year: 2024,
+        expectedFee: 3000,
+        createdAt: DateTime(2024, 4, 1),
+      ),
+      MonthlyRecord(
+        id: 3,
+        studentId: 1,
+        month: 5,
+        year: 2024,
+        expectedFee: 3000,
+        createdAt: DateTime(2024, 5, 1),
+      ),
+    ];
+
+    testWidgets(
+      'confirming the dialog deletes the affected records and saves the new joinDate',
+      (tester) async {
+        final router = _buildRouter();
+        final studentRepository = FakeStudentRepository(
+          students: [existingStudent()],
+        );
+        final recordRepository = FakeMonthlyRecordRepository(
+          records: existingRecords(),
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              studentRepositoryProvider.overrideWithValue(studentRepository),
+              monthlyRecordRepositoryProvider.overrideWithValue(
+                recordRepository,
+              ),
+            ],
+            child: _App(router: router),
+          ),
+        );
+        await tester.pumpAndSettle();
+        router.push('/students/1/edit');
+        await tester.pumpAndSettle();
+
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(AddStudentScreen)),
+        );
+        // Moves joinDate to May 1st: a clean month boundary. March and
+        // April (strictly before) must be deleted; May (same month) is
+        // reprorated, not deleted.
+        container
+            .read(addStudentFormNotifierProvider(1).notifier)
+            .updateJoinDate(DateTime(2024, 5, 1));
+
+        await _tapSaveButton(tester);
+        await tester.pumpAndSettle();
+
+        expect(
+          find.textContaining('This removes 2 months of history'),
+          findsOneWidget,
+        );
+
+        await tester.tap(find.widgetWithText(TextButton, 'Delete'));
+        await tester.pumpAndSettle();
+
+        final remaining = await recordRepository.getRecordsForStudent(1);
+        expect(remaining.map((r) => r.month), [5]);
+        expect(
+          studentRepository.students.first.joinDate,
+          DateTime(2024, 5, 1),
+        );
+      },
+    );
+
+    testWidgets(
+      'canceling the dialog aborts the entire edit: no deletion, no date change',
+      (tester) async {
+        final router = _buildRouter();
+        final studentRepository = FakeStudentRepository(
+          students: [existingStudent()],
+        );
+        final recordRepository = FakeMonthlyRecordRepository(
+          records: existingRecords(),
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              studentRepositoryProvider.overrideWithValue(studentRepository),
+              monthlyRecordRepositoryProvider.overrideWithValue(
+                recordRepository,
+              ),
+            ],
+            child: _App(router: router),
+          ),
+        );
+        await tester.pumpAndSettle();
+        router.push('/students/1/edit');
+        await tester.pumpAndSettle();
+
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(AddStudentScreen)),
+        );
+        container
+            .read(addStudentFormNotifierProvider(1).notifier)
+            .updateJoinDate(DateTime(2024, 5, 1));
+
+        await _tapSaveButton(tester);
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
+        await tester.pumpAndSettle();
+
+        final remaining = await recordRepository.getRecordsForStudent(1);
+        expect(remaining, hasLength(3));
+        expect(
+          studentRepository.students.first.joinDate,
+          DateTime(2024, 3, 1),
+        );
+        // The edit is aborted entirely: still on the edit screen.
+        expect(find.byType(AddStudentScreen), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'joinDate moved later into the same month as an existing record reprorates that record instead of deleting it',
+      (tester) async {
+        final router = _buildRouter();
+        final studentRepository = FakeStudentRepository(
+          students: [existingStudent()],
+        );
+        final recordRepository = FakeMonthlyRecordRepository(
+          records: existingRecords(),
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              studentRepositoryProvider.overrideWithValue(studentRepository),
+              monthlyRecordRepositoryProvider.overrideWithValue(
+                recordRepository,
+              ),
+            ],
+            child: _App(router: router),
+          ),
+        );
+        await tester.pumpAndSettle();
+        router.push('/students/1/edit');
+        await tester.pumpAndSettle();
+
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(AddStudentScreen)),
+        );
+        // May 2024 has 31 days; moving joinDate to the 16th leaves 16
+        // remaining days (16..31 inclusive).
+        container
+            .read(addStudentFormNotifierProvider(1).notifier)
+            .updateJoinDate(DateTime(2024, 5, 16));
+
+        await _tapSaveButton(tester);
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.widgetWithText(TextButton, 'Delete'));
+        await tester.pumpAndSettle();
+
+        final remaining = await recordRepository.getRecordsForStudent(1);
+        expect(remaining.map((r) => r.month), [5]);
+        expect(remaining.first.expectedFee, (3000 / 31) * 16);
+      },
+    );
+
+    testWidgets(
+      'no records before the new joinDate does not show the dialog',
+      (tester) async {
+        final router = _buildRouter();
+        final studentRepository = FakeStudentRepository(
+          students: [existingStudent()],
+        );
+        final recordRepository = FakeMonthlyRecordRepository();
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              studentRepositoryProvider.overrideWithValue(studentRepository),
+              monthlyRecordRepositoryProvider.overrideWithValue(
+                recordRepository,
+              ),
+            ],
+            child: _App(router: router),
+          ),
+        );
+        await tester.pumpAndSettle();
+        router.push('/students/1/edit');
+        await tester.pumpAndSettle();
+
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(AddStudentScreen)),
+        );
+        container
+            .read(addStudentFormNotifierProvider(1).notifier)
+            .updateJoinDate(DateTime(2024, 5, 1));
+
+        await _tapSaveButton(tester);
+
+        expect(
+          find.textContaining('This removes'),
+          findsNothing,
+        );
+        expect(
+          studentRepository.students.first.joinDate,
+          DateTime(2024, 5, 1),
+        );
+      },
+    );
+  });
 }

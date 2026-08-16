@@ -39,3 +39,35 @@ List<MissingMonth> calculateMissingMonths({
 
   return missing;
 }
+
+typedef LaterJoinDateImpact = ({
+  List<MonthlyRecord> toDelete,
+  MonthlyRecord? toReprorate,
+});
+
+/// Splits a Student's existing records by the impact of moving `joinDate`
+/// to a later date: records strictly before the new joinDate's month must
+/// be deleted, while a record that falls in the same month as the new
+/// joinDate must be reprorated instead of deleted.
+LaterJoinDateImpact recordsAffectedByLaterJoinDate({
+  required DateTime newJoinDate,
+  required List<MonthlyRecord> existingRecords,
+}) {
+  final newJoinKey = newJoinDate.year * 12 + newJoinDate.month;
+
+  final toDelete = <MonthlyRecord>[];
+  MonthlyRecord? toReprorate;
+
+  for (final record in existingRecords) {
+    final recordKey = record.year * 12 + record.month;
+    if (recordKey < newJoinKey) {
+      toDelete.add(record);
+    } else if (recordKey == newJoinKey) {
+      toReprorate = record;
+    }
+  }
+
+  toDelete.sort((a, b) => (a.year * 12 + a.month).compareTo(b.year * 12 + b.month));
+
+  return (toDelete: toDelete, toReprorate: toReprorate);
+}

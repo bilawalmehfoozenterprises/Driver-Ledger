@@ -8,6 +8,7 @@ import '../../data/repositories/monthly_record_repository.dart';
 import '../../domain/backfill_calculator.dart';
 import '../viewmodels/add_student_form_notifier.dart';
 import '../widgets/fill_mock_data_button.dart';
+import '../widgets/join_date_moved_later_dialog.dart';
 import '../widgets/save_student_button.dart';
 import '../widgets/student_info_fields.dart';
 import '../widgets/transport_details_fields.dart';
@@ -75,6 +76,47 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
     final formState = ref.read(addStudentFormNotifierProvider(widget.studentId));
     final originalJoinDate = formState.originalJoinDate;
     final editedJoinDate = formState.joinDate;
+
+    if (!isNewStudent &&
+        originalJoinDate != null &&
+        editedJoinDate.isAfter(originalJoinDate)) {
+      final recordRepository = ref.read(monthlyRecordRepositoryProvider);
+      final existingRecords = await recordRepository.getRecordsForStudent(
+        widget.studentId!,
+      );
+      final impact = recordsAffectedByLaterJoinDate(
+        newJoinDate: editedJoinDate,
+        existingRecords: existingRecords,
+      );
+
+      if (impact.toDelete.isNotEmpty) {
+        if (!mounted) return;
+        final confirmed = await showJoinDateMovedLaterDialog(
+          context,
+          monthsToDelete: impact.toDelete.length,
+        );
+        if (confirmed != true) return;
+
+        for (final record in impact.toDelete) {
+          await recordRepository.deleteRecord(record.id!);
+        }
+      }
+
+      final toReprorate = impact.toReprorate;
+      if (toReprorate != null) {
+        final reproratedFee = calculateProratedFee(
+          monthlyFee: double.tryParse(formState.monthlyFee) ?? toReprorate.expectedFee,
+          month: toReprorate.month,
+          year: toReprorate.year,
+          joinDate: editedJoinDate,
+        );
+        await recordRepository.updateRecord(
+          toReprorate.copyWith(expectedFee: reproratedFee),
+        );
+      }
+    }
+
+    if (!mounted) return;
 
     final student = await ref
         .read(addStudentFormNotifierProvider(widget.studentId).notifier)

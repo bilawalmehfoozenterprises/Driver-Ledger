@@ -139,4 +139,69 @@ void main() {
       ]);
     });
   });
+
+  group('recordsAffectedByLaterJoinDate', () {
+    test(
+      'records strictly before the new joinDate month are marked for deletion',
+      () {
+        final result = recordsAffectedByLaterJoinDate(
+          newJoinDate: DateTime(2024, 6, 1),
+          existingRecords: [
+            _record(3, 2024),
+            _record(4, 2024),
+            _record(5, 2024),
+            _record(6, 2024),
+          ],
+        );
+
+        expect(
+          result.toDelete.map((r) => (month: r.month, year: r.year)),
+          [(month: 3, year: 2024), (month: 4, year: 2024), (month: 5, year: 2024)],
+        );
+        // Joining on the 1st (a clean month boundary) means the existing
+        // June record does not need reproration.
+        expect(result.toReprorate?.month, 6);
+      },
+    );
+
+    test(
+      'a record in the same month as the new joinDate is marked for reproration, not deletion',
+      () {
+        final result = recordsAffectedByLaterJoinDate(
+          newJoinDate: DateTime(2024, 5, 15),
+          existingRecords: [_record(3, 2024), _record(4, 2024), _record(5, 2024)],
+        );
+
+        expect(
+          result.toDelete.map((r) => (month: r.month, year: r.year)),
+          [(month: 3, year: 2024), (month: 4, year: 2024)],
+        );
+        expect(result.toReprorate?.month, 5);
+        expect(result.toReprorate?.year, 2024);
+      },
+    );
+
+    test('no records before the new joinDate returns nothing affected', () {
+      final result = recordsAffectedByLaterJoinDate(
+        newJoinDate: DateTime(2024, 1, 1),
+        existingRecords: [_record(3, 2024), _record(4, 2024)],
+      );
+
+      expect(result.toDelete, isEmpty);
+      expect(result.toReprorate, isNull);
+    });
+
+    test('a record on a later year-month boundary is still detected', () {
+      final result = recordsAffectedByLaterJoinDate(
+        newJoinDate: DateTime(2024, 1, 1),
+        existingRecords: [_record(11, 2023), _record(12, 2023)],
+      );
+
+      expect(
+        result.toDelete.map((r) => (month: r.month, year: r.year)),
+        [(month: 11, year: 2023), (month: 12, year: 2023)],
+      );
+      expect(result.toReprorate, isNull);
+    });
+  });
 }
